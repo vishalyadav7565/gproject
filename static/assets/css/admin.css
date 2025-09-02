@@ -1,0 +1,81 @@
+/* Change background color of header */
+#header {
+    background-color: #1e293b !important;  /* Dark blue/gray */
+    color: white !important;
+}
+
+/* Change site name text */
+#site-name a {
+    font-size: 22px;
+    font-weight: bold;
+    color: #facc15 !important; /* Yellow */
+    text-decoration: none;
+}
+
+/* Sidebar menu */
+#nav-sidebar {
+    background: #0f172a !important;
+}
+
+/* Change module table headings */
+.module caption {
+    background: #2563eb !important; /* Blue */
+    color: white !important;
+    font-weight: bold;
+}
+
+/* Buttons */
+input[type=submit], .button {
+    background: #16a34a !important; /* Green */
+    border-radius: 8px !important;
+    color: white !important;
+    padding: 6px 12px;
+    border: none;
+}
+
+/* Hover effect */
+input[type=submit]:hover, .button:hover {
+    background: #15803d !important;
+}
+/* Inline action buttons */
+a.button {
+    padding: 4px 10px;
+    border-radius: 4px;
+    color: #fff !important;
+    text-decoration: none;
+    font-weight: bold;
+    margin: 2px;
+    display: inline-block;
+    font-size: 12px;
+}
+
+/* Specific buttons for order workflow */
+.button-processing { background-color: #ffc107; }   /* Pending → Processing (yellow) */
+.button-dispatch { background-color: #17a2b8; }    /* Processing → Dispatched (cyan/blue) */
+.button-ship { background-color: #007bff; }        /* Dispatched → Shipped (blue) */
+.button-deliver { background-color: #28a745; }     /* Shipped → Delivered (green) */
+.button-cancel { background-color: #dc3545; }      /* Cancelled (red) */
+
+/* Optional: Add hover effects */
+a.button:hover {
+    opacity: 0.85;
+}
+
+/* Status badges in list_display */
+span.status-badge {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: bold;
+    color: #fff;
+}
+
+/* Status colors */
+.status-Pending { background-color: #6c757d; }       /* gray */
+.status-Processing { background-color: #ffc107; }    /* yellow */
+.status-Dispatched { background-color: #17a2b8; }   /* cyan */
+.status-Shipped { background-color: #007bff; }       /* blue */
+.status-Delivered { background-color: #28a745; }     /* green */
+.status-Cancelled { background-color: #dc3545; }     /* red */
+

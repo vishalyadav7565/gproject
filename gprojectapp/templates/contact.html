@@ -1,0 +1,59 @@
+{% extends "authentication/baseauth.html" %}
+{% load static %}
+
+{% block title %}Contact Us{% endblock title %}
+
+{% block content %}
+<div class="container" data-aos="fade-up">
+  <div class="row justify-content-center">
+      {% for message in messages %}
+
+    <div class="alert alert-{{message.tags}} alert-dismissible fade show" role="alert">
+      <strong>{{message}}</strong>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+    <div class="bg-dark text-light p-4 rounded shadow"
+         style="width: 400px; height: auto; max-height: 650px; margin: 50px auto;">
+
+      <h4 class="text-center mb-3">Contact Us</h4>
+
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+              {{ message }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+
+      <form method="post" action="">
+        {% csrf_token %}
+
+        <div class="mb-2">
+          <label class="form-label">Name</label>
+          <input type="text" class="form-control form-control-sm" name="name" required>
+        </div>
+
+        <div class="mb-2">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-control form-control-sm" name="email" required>
+        </div>
+
+        <div class="mb-2">
+          <label class="form-label">Phone</label>
+          <input type="text" class="form-control form-control-sm" name="phone" required>
+        </div>
+
+        <div class="mb-2">
+          <label class="form-label">Message</label>
+          <textarea class="form-control form-control-sm" name="message" rows="4" required></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-sm w-100">Send</button>
+      </form>
+
+    </div>
+  </div>
+</div>
+{% endblock  %}

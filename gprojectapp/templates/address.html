@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="container my-5">
+    <div class="row g-4">
+        <!-- Address Form -->
+        <div class="col-lg-6">
+            <div class="card checkout-card">
+                <div class="card-body p-4">
+                    <h3 class="mb-4 text-primary fw-bold fade-in">
+                        <i class="bi bi-geo-alt-fill me-2"></i>Shipping Address
+                    </h3>
+                    <form method="POST">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Full Name</label>
+                            <input type="text" name="full_name" class="form-control custom-input" placeholder="John Doe" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Email</label>
+                            <input type="email" name="email" class="form-control custom-input" placeholder="example@email.com" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Phone</label>
+                            <input type="text" name="phone" class="form-control custom-input" placeholder="+91 9876543210" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Address</label>
+                            <textarea name="address_line" id="address" class="form-control custom-input" rows="2" placeholder="Street, Locality" required></textarea>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-semibold">City</label>
+                                <input type="text" name="city" class="form-control custom-input" placeholder="Noida" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-semibold">State</label>
+                                <input type="text" name="state" class="form-control custom-input" placeholder="Uttar Pradesh" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Pincode</label>
+                            <input type="text" name="pincode" class="form-control custom-input" placeholder="201301" required>
+                        </div>
+
+                        <!-- Hidden fields for live location -->
+                        <input type="hidden" name="latitude" id="latitude">
+                        <input type="hidden" name="longitude" id="longitude">
+
+                        <button type="button" class="btn btn-outline-dark w-100 mb-3 custom-btn" onclick="getLocation()">
+                            <i class="bi bi-geo"></i> Use My Current Location
+                        </button>
+                        <button type="submit" class="btn btn-primary w-100 custom-btn">
+                            <i class="bi bi-check-circle-fill me-1"></i> Confirm Order
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Summary -->
+<div class="col-lg-6">
+    <div class="card checkout-card">
+        <div class="card-body p-4">
+            <h3 class="mb-4 text-success fw-bold fade-in">
+                <i class="bi bi-cart-fill me-2"></i>Order Summary
+            </h3>
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Product</th>
+                            <th class="text-center">Qty</th>
+                            <th class="text-end">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in cart_items %}
+                        <tr class="fade-in">
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <img src="{{ item.image.url }}" alt="{{ item.name }}" width="50" height="50" class="rounded me-2 border zoom-img">
+                                    <span>{{ item.name }}</span>
+                                </div>
+                            </td>
+                            <td class="text-center">{{ item.quantity }}</td>
+                            <td class="text-end fw-semibold">₹{{ item.subtotal }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <hr>
+            <h4 class="text-end text-primary fw-bold">Grand Total: ₹{{ total_price }}</h4>
+        </div>
+    </div>
+</div>
+
+
+<!-- Custom CSS -->
+<style>
+/* Card Styling */
+.checkout-card {
+    border: none;
+    border-radius: 18px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.checkout-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
+}
+
+/* Input Styling */
+.custom-input {
+    border-radius: 10px;
+    padding: 10px 14px;
+    transition: all 0.3s ease;
+}
+.custom-input:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 8px rgba(0,123,255,0.3);
+}
+
+/* Button Styling */
+.custom-btn {
+    border-radius: 12px;
+    font-weight: 600;
+    padding: 12px;
+    transition: all 0.3s ease;
+}
+.custom-btn:hover {
+    transform: scale(1.02);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+}
+
+/* Image hover */
+.zoom-img {
+    transition: transform 0.3s ease;
+}
+.zoom-img:hover {
+    transform: scale(1.15);
+}
+
+/* Fade In Animations */
+.fade-in {
+    animation: fadeInUp 0.6s ease forwards;
+    opacity: 0;
+}
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+</style>
+
+<!-- Live Location Script -->
+<script>
+function getLocation() {
+    if(navigator.geolocation){
+        navigator.geolocation.getCurrentPosition(showPosition);
+    } else {
+        alert("Geolocation is not supported by this browser.");
+    }
+}
+
+function showPosition(position){
+    document.getElementById('latitude').value = position.coords.latitude;
+    document.getElementById('longitude').value = position.coords.longitude;
+
+    fetch(`https://nominatim.openstreetmap.org/reverse?lat=${position.coords.latitude}&lon=${position.coords.longitude}&format=json`)
+    .then(res => res.json())
+    .then(data => document.getElementById('address').value = data.display_name)
+    .catch(err => alert("Unable to fetch location"));
+}
+</script>
+{% endblock %}

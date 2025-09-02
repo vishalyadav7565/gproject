@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}My Profile{% endblock %}
+
+{% block body %}
+<style>
+    .profile-card {
+        background: linear-gradient(135deg, #2c3e50, #4ca1af);
+        border-radius: 20px;
+        color: white;
+        padding: 30px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .profile-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+    }
+    .profile-header {
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+    .profile-info {
+        font-size: 1.1rem;
+        margin: 10px 0;
+    }
+    .profile-footer {
+        margin-top: 20px;
+    }
+    .btn-custom {
+        border-radius: 12px;
+        padding: 10px 20px;
+        font-weight: bold;
+        transition: all 0.3s ease;
+    }
+    .btn-custom:hover {
+        transform: scale(1.05);
+    }
+</style>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+
+            <!-- Stylish Profile Card -->
+            <div class="profile-card text-center">
+                <div class="profile-header">
+                    <i class="bi bi-person-circle" style="font-size: 3rem;"></i>
+                    <p class="profile-info"><strong>{{ user.first_name }} {{ user.last_name }}</strong> </p>
+                </div>
+
+                <div class="profile-body">
+                    <p class="profile-info"><strong>Username:</strong> {{ user.username }}</p>
+                    <p class="profile-info"><strong>Email:</strong> {{ user.email }}</p>
+                    <p class="profile-info"><strong>Phone:</strong> {{ profile.phone }}</p>
+                </div>
+
+                <div class="profile-footer">
+                    <a href="{% url 'edit_profile' %}" class="btn btn-light btn-custom me-2">
+                        <i class="bi bi-pencil-square"></i> Edit Profile
+                    </a>
+                    <a href="{% url 'logout' %}" class="btn btn-danger btn-custom">
+                        <i class="bi bi-box-arrow-right"></i> Logout
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

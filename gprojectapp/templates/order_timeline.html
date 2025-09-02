@@ -1,0 +1,29 @@
+<div class="timeline-step {% if order.status in 'Confirmed Processing Dispatched Shipped Delivered' %}active{% endif %}">
+  <span class="icon">✅</span>
+  <p>Confirmed</p>
+  <small>{{ order.confirmed_at|date:"d M, H:i" }}</small>
+</div>
+
+<div class="timeline-step {% if order.status in 'Processing Dispatched Shipped Delivered' %}active{% endif %}">
+  <span class="icon">⚙️</span>
+  <p>Processing</p>
+  <small>{{ order.processing_at|date:"d M, H:i" }}</small>
+</div>
+
+<div class="timeline-step {% if order.status in 'Dispatched Shipped Delivered' %}active{% endif %}">
+  <span class="icon">📦</span>
+  <p>Dispatched</p>
+  <small>Courier: {{ order.courier_name|default:"-" }}</small>
+</div>
+
+<div class="timeline-step {% if order.status in 'Shipped Delivered' %}active{% endif %}">
+  <span class="icon">🚚</span>
+  <p>Shipped</p>
+  <small>Expected: {{ order.expected_delivery|date:"d M" }}</small>
+</div>
+
+<div class="timeline-step {% if order.status == 'Delivered' %}active{% endif %}">
+  <span class="icon">📬</span>
+  <p>Delivered</p>
+  <small>{{ order.delivered_at|date:"d M, H:i" }}</small>
+</div>

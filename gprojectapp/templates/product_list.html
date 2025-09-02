@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Search Results{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+
+  <!-- Search Bar & Filters -->
+  <div class="row">
+    <div class="col-md-3">
+      <!-- Categories -->
+      <h5>Categories</h5>
+      <form method="get" id="filterForm">
+        {% for cat in categories %}
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" name="category" value="{{ cat.name }}"
+                 {% if cat.name in selected_categories %}checked{% endif %} onchange="document.getElementById('filterForm').submit();">
+          <label class="form-check-label">{{ cat.name }}</label>
+        </div>
+        {% endfor %}
+
+        <hr>
+        <!-- Price Range -->
+        <h5>Price Range</h5>
+        <input type="number" name="min_price" class="form-control mb-2" placeholder="Min" value="{{ min_price }}">
+        <input type="number" name="max_price" class="form-control mb-2" placeholder="Max" value="{{ max_price }}">
+        <button type="submit" class="btn btn-primary btn-sm">Apply</button>
+
+        <hr>
+        <!-- Sort -->
+        <h5>Sort By</h5>
+        <select name="sort_by" class="form-select" onchange="document.getElementById('filterForm').submit();">
+          <option value="">--Select--</option>
+          <option value="price_asc" {% if sort_by == 'price_asc' %}selected{% endif %}>Price: Low to High</option>
+          <option value="price_desc" {% if sort_by == 'price_desc' %}selected{% endif %}>Price: High to Low</option>
+        </select>
+      </form>
+    </div>
+
+    <!-- Product List -->
+    <div class="col-md-9">
+      <h4>Search Results</h4>
+      <div class="row">
+        {% if products %}
+          {% for product in products %}
+          <div class="col-md-4 mb-4">
+            <div class="card h-100">
+              <img src="{{ product.image.url }}" class="card-img-top" style="height:200px; object-fit:cover;">
+              <div class="card-body">
+                <h5 class="card-title">{{ product.name }}</h5>
+                <p class="card-text">₹{{ product.price }}</p>
+                <a href="{% url 'product_detail' product.id %}" class="btn btn-sm btn-primary">View</a>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        {% else %}
+          <p>No products found matching your criteria.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

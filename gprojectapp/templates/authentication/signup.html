@@ -1,0 +1,63 @@
+{% extends "authentication/baseauth.html" %}
+{% block title %}Sign Up - aambika{% endblock title %}
+{% load static %}
+{% block content %}
+<div class="container" data-aos="fade-up">
+  <div class="row justify-content-center">
+    <div class="bg-dark text-light p-4 rounded shadow"
+         style="width: 350px; height: auto; max-height: 550px; margin: 50px auto;">
+
+      <h4 class="text-center mb-3">Sign Up</h4>
+       {% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+      <form method="post" action="{% url 'signup' %}">
+        {% csrf_token %}
+
+        <div class="mb-2">
+          <label class="form-label">Username</label>
+          <input type="text" class="form-control form-control-sm" name="username" required>
+        </div>
+        <div class="mb-2">
+  <label class="form-label">First Name</label>
+  <input type="text" class="form-control form-control-sm" name="first_name" required>
+</div>
+<div class="mb-2">
+  <label class="form-label">Last Name</label>
+  <input type="text" class="form-control form-control-sm" name="last_name" required>
+</div>
+
+        <div class="mb-2">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-control form-control-sm" name="email" required>
+        </div>
+
+        <div class="mb-2">
+          <label class="form-label">Phone Number</label>
+          <input type="tel" class="form-control form-control-sm" name="phone" required>
+        </div>
+
+        <div class="mb-2">
+          <label class="form-label">Password</label>
+          <input type="password" class="form-control form-control-sm" name="password1" required>
+        </div>
+
+        <div class="mb-2">
+          <label class="form-label">Confirm Password</label>
+          <input type="password" class="form-control form-control-sm" name="password2" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-sm w-100">Sign Up</button>
+        <p class="text-center mt-2 small fs-6">Already have an account? <a href="{% url 'login' %}" class="text-info">Login</a></p>
+      </form>
+
+    </div>
+  </div>
+</div>
+
+{% endblock %}

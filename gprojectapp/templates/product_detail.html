@@ -1,0 +1,341 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block body %}
+<div class="container mt-5">
+  <div class="row">
+    <!-- Product Image -->
+    <div class="col-md-6">
+      <img src="{{ product.image.url }}" class="img-fluid rounded shadow" alt="{{ product.name }}">
+    </div>
+
+    <!-- Product Details -->
+    <div class="col-md-6">
+      <h2>{{ product.name }}</h2>
+      <p class="text-muted">₹{{ product.price }}</p>
+      <p>{{ product.description }}</p>
+
+      <!-- Average Rating -->
+      <p>
+        ⭐ Average Rating:
+        <strong>{{ average_rating }}/5</strong>
+        ({{ reviews.count }} reviews)
+      </p>
+      <p class="fw-bold text-success">
+        ₹{{ product.price }}
+        {% if product.offer %}
+          <span class="badge bg-danger">{{ product.offer }}% off</span>
+        {% endif %}
+      </p>
+
+      <!-- ✅ Color Selection -->
+      {% if product.colors.exists %}
+      <div class="mb-3">
+        <label class="fw-bold">Choose Color:</label>
+        <div class="d-flex gap-2 flex-wrap">
+          {% for color in product.colors.all %}
+          <label class="color-option" title="{{ color.name }}">
+            <input type="radio" name="color" value="{{ color.id }}" class="d-none" {% if forloop.first %}checked{% endif %}>
+            <span class="color-circle" style="background-color: {{ color.hex_code|default:'#ccc' }}"></span>
+          </label>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Cart Controls -->
+      <div class="d-flex align-items-center gap-2">
+        <button class="btn btn-outline-danger btn-sm clear-cart-btn" data-id="{{ product.id }}">Clear</button>
+        <button class="btn btn-outline-secondary btn-sm remove-cart-btn" data-id="{{ product.id }}">➖</button>
+        <span id="qty-{{ product.id }}" class="px-2">0</span>
+        <button class="btn btn-outline-primary btn-sm add-to-cart-btn" data-id="{{ product.id }}">➕</button>
+      </div>
+
+      <!-- Main Buttons -->
+      <button class="btn btn-success mt-3 add-cart-btn" data-id="{{ product.id }}">🛒 Add to Cart</button>
+      <button class="btn btn-warning mt-3 buy-now-btn" data-id="{{ product.id }}">⚡ Buy Now</button>
+    </div>
+  </div>
+
+  <hr class="my-4">
+
+  <!-- About Product -->
+  <div class="mt-4 p-3 border rounded shadow-sm bg-light">
+    <h5 class="fw-bold mb-3">About this item</h5>
+    <ul class="list-unstyled">
+      {% for point in product.get_about_points %}
+        <li class="mb-2 d-flex align-items-start">
+          <span class="text-primary me-2">✔</span>
+          <span>{{ point }}</span>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <!-- Specifications Section -->
+  <div class="mt-4 p-3 border rounded shadow-sm">
+    <h5 class="fw-bold mb-3">Specifications</h5>
+
+    <div id="specContainer">
+      {% for spec in product.specifications.all %}
+      <div class="spec-row py-2 border-bottom {% if forloop.counter > 5 %}d-none{% endif %}">
+        <div class="row">
+          <div class="col-4 fw-bold text-muted">{{ spec.key }}</div>
+          <div class="col-8">{{ spec.value }}</div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    {% if product.specifications.count > 5 %}
+      <button id="toggleSpecs" class="btn btn-link p-0 fw-bold text-primary">
+        View More ▼
+      </button>
+    {% endif %}
+  </div>
+
+  <!-- Review Section -->
+  <div class="mt-4">
+    <h4>Customer Reviews</h4>
+
+    {% if user.is_authenticated %}
+    <form method="POST" enctype="multipart/form-data" class="mb-4">
+      {% csrf_token %}
+      <div class="mb-3">
+        <label class="form-label">Rating:</label>
+        <div class="star-rating">
+          {% for i in "54321" %}
+            <input type="radio" name="rating" value="{{ i }}" id="star{{ i }}">
+            <label for="star{{ i }}">⭐</label>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <textarea name="comment" class="form-control" placeholder="Write your review..."></textarea>
+      </div>
+
+      <div class="mb-3">
+        <label>Upload Image:</label>
+        <input type="file" name="image" class="form-control" accept="image/*">
+      </div>
+
+      <div class="mb-3">
+        <label>Upload Video:</label>
+        <input type="file" name="video" class="form-control" accept="video/*">
+      </div>
+
+      <button type="submit" class="btn btn-primary">Submit Review</button>
+    </form>
+    {% else %}
+      <p><a href="{% url 'login' %}">Login</a> to add a review.</p>
+    {% endif %}
+
+    <!-- Show Reviews -->
+    {% for review in reviews %}
+      <div class="card mb-3">
+        <div class="card-body">
+          <h6>
+            {{ review.user.username }} -
+            {% for i in "12345" %}
+              {% if i|add:"0" <= review.rating|stringformat:"s" %}
+                ⭐
+              {% endif %}
+            {% endfor %}
+          </h6>
+          <p>{{ review.comment }}</p>
+
+          {% if review.image %}
+            <img src="{{ review.image.url }}" 
+                 class="img-thumbnail mb-2 review-media" 
+                 width="120" 
+                 data-type="image" 
+                 data-src="{{ review.image.url }}">
+          {% endif %}
+
+          {% if review.video %}
+            <video width="120" class="img-thumbnail mb-2 review-media" data-type="video" data-src="{{ review.video.url }}">
+              <source src="{{ review.video.url }}" type="video/mp4">
+            </video>
+          {% endif %}
+
+          <small class="text-muted">{{ review.created_at|date:"M d, Y H:i" }}</small>
+        </div>
+      </div>
+    {% empty %}
+      <p>No reviews yet. Be the first!</p>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Bootstrap Modal for Fullscreen Preview -->
+<div class="modal fade" id="mediaModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content bg-dark">
+      <div class="modal-body text-center">
+        <img id="modalImage" src="" class="img-fluid d-none">
+        <video id="modalVideo" class="w-100 d-none" controls></video>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+/* Star Rating */
+.star-rating {
+  display: flex;
+  flex-direction: row-reverse;
+  font-size: 2rem;
+  justify-content: flex-start;
+}
+.star-rating input { display: none; }
+.star-rating label {
+  cursor: pointer;
+  color: #ccc;
+}
+.star-rating input:checked ~ label {
+  color: gold;
+}
+
+/* Review Thumbnails */
+.review-media {
+  cursor: pointer;
+  transition: 0.3s;
+}
+.review-media:hover {
+  transform: scale(1.05);
+  border: 2px solid #007bff;
+}
+
+/* Specifications */
+.spec-row {
+  font-size: 0.95rem;
+}
+.spec-row:last-child {
+  border-bottom: none;
+}
+
+/* ✅ Color selection */
+.color-option {
+  display: inline-block;
+  cursor: pointer;
+}
+.color-circle {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid #ddd;
+  display: inline-block;
+  transition: transform 0.2s, border-color 0.2s;
+}
+.color-option input:checked + .color-circle {
+  border-color: #000;
+  transform: scale(1.1);
+}
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const modal = new bootstrap.Modal(document.getElementById("mediaModal"));
+  const modalImg = document.getElementById("modalImage");
+  const modalVid = document.getElementById("modalVideo");
+
+  document.querySelectorAll(".review-media").forEach(el => {
+    el.addEventListener("click", () => {
+      const type = el.getAttribute("data-type");
+      const src = el.getAttribute("data-src");
+
+      if (type === "image") {
+        modalVid.classList.add("d-none");
+        modalImg.classList.remove("d-none");
+        modalImg.src = src;
+      } else {
+        modalImg.classList.add("d-none");
+        modalVid.classList.remove("d-none");
+        modalVid.src = src;
+        modalVid.play();
+      }
+      modal.show();
+    });
+  });
+
+  document.getElementById("mediaModal").addEventListener("hidden.bs.modal", () => {
+    modalVid.pause();
+    modalVid.src = "";
+  });
+
+  // Specifications toggle
+  const btn = document.getElementById("toggleSpecs");
+  if (btn) {
+    btn.addEventListener("click", function() {
+      const rows = document.querySelectorAll("#specContainer .spec-row");
+      const hiddenRows = document.querySelectorAll("#specContainer .spec-row.d-none");
+
+      if (hiddenRows.length > 0) {
+        rows.forEach(r => r.classList.remove("d-none"));
+        btn.textContent = "View Less ▲";
+      } else {
+        rows.forEach((r, idx) => {
+          if (idx >= 5) r.classList.add("d-none");
+        });
+        btn.textContent = "View More ▼";
+      }
+    });
+  }
+});
+</script>
+
+<!-- Cart JavaScript -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    function updateCart(url, productId, redirectToCheckout=false) {
+        // Get selected color
+        const selectedColor = document.querySelector('input[name="color"]:checked');
+        const colorId = selectedColor ? selectedColor.value : null;
+
+        fetch(`${url}/${productId}/?color=${colorId}`)
+            .then(response => response.json())
+            .then(data => {
+                const qtySpan = document.getElementById(`qty-${productId}`);
+                if (qtySpan) qtySpan.textContent = data.qty || 0;
+
+                const cartCount = document.getElementById('cart-count');
+                if (cartCount) cartCount.textContent = data.cart_count;
+
+                if (redirectToCheckout) window.location.href = "/checkout/";
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            updateCart('/add-to-cart', this.dataset.id);
+        });
+    });
+
+    document.querySelectorAll('.add-cart-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            updateCart('/add-to-cart', this.dataset.id);
+        });
+    });
+
+    document.querySelectorAll('.remove-cart-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            updateCart('/remove-from-cart', this.dataset.id);
+        });
+    });
+
+    document.querySelectorAll('.clear-cart-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            updateCart('/clear-from-cart', this.dataset.id);
+        });
+    });
+
+    document.querySelectorAll('.buy-now-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            updateCart('/add-to-cart', this.dataset.id, true);
+        });
+    });
+});
+</script>
+{% endblock %}

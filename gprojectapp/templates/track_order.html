@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Track Order #{{ order.id }}{% endblock title %}
+
+{% block body %}
+<div class="container mt-5 mb-5">
+
+  <!-- Page Title -->
+  <h2 class="text-center mb-4 fw-bold">🚚 Track Your Order</h2>
+
+  <!-- Order Summary Card -->
+  <div id="order-summary" class="card shadow-sm mb-4 border-0 rounded-3">
+    <div class="card-body d-flex flex-column flex-md-row justify-content-between align-items-center">
+
+      <!-- Product Details -->
+      <div class="d-flex align-items-center">
+        {% if order.product.image %}
+          <img src="{{ order.product.image.url }}" alt="{{ order.product.product_name }}" 
+               class="img-fluid rounded me-3" style="width: 80px; height: 80px; object-fit: cover;">
+        {% else %}
+          <div class="bg-light border rounded me-3 d-flex justify-content-center align-items-center" 
+               style="width: 80px; height: 80px;">No Image</div>
+        {% endif %}
+        <div>
+          <h5 class="card-title mb-1">{{ order.product.product_name }}</h5>
+          <p class="text-muted mb-1">Qty: {{ order.quantity }}</p>
+          <p class="text-muted mb-1">Total: <strong>₹{{ order.total_price }}</strong></p>
+        </div>
+      </div>
+
+      <!-- Payment + Status -->
+      <div class="text-md-end mt-3 mt-md-0">
+        <p class="mb-1"><strong>Status:</strong> <span id="order-status" class="text-primary">{{ order.status }}</span></p>
+        <span id="payment-status" class="badge {% if order.payment_status == 'Paid' %}bg-success{% else %}bg-danger{% endif %} px-3 py-2">
+          {{ order.payment_status }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Timeline -->
+  <div id="timeline" class="timeline mb-4">
+    {% include "order_timeline.html" with order=order %}
+  </div>
+
+  <!-- Delivery Location -->
+  <div class="text-center mt-4">
+    {% if order.latitude and order.longitude %}
+      <a href="https://www.google.com/maps/search/?api=1&query={{ order.latitude }},{{ order.longitude }}" 
+         class="btn btn-outline-primary px-4" target="_blank">📍 View Delivery Location</a>
+    {% else %}
+      <p><strong>Address:</strong> {{ order.address }}</p>
+    {% endif %}
+  </div>
+
+  <!-- Back Button -->
+  <div class="text-center mt-4">
+    <a href="{% url 'orders' %}" class="btn btn-secondary px-4">⬅ Back to My Orders</a>
+  </div>
+</div>
+
+<!-- Timeline CSS -->
+<style>
+.timeline {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  margin: 40px 0;
+  flex-wrap: wrap;
+}
+.timeline::before {
+  content: "";
+  position: absolute;
+  top: 25px;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: #e0e0e0;
+  z-index: 1;
+}
+.timeline-step {
+  position: relative;
+  text-align: center;
+  flex: 1;
+  min-width: 80px;
+  z-index: 2;
+}
+.timeline-step .icon {
+  display: inline-block;
+  background: #e0e0e0;
+  color: white;
+  border-radius: 50%;
+  padding: 12px 15px;
+  font-size: 18px;
+  z-index: 3;
+}
+.timeline-step.active .icon {
+  background: #0d6efd;
+}
+.timeline-step p {
+  margin-top: 10px;
+  font-size: 14px;
+}
+.timeline-step.active p {
+  font-weight: bold;
+  color: #0d6efd;
+}
+@media (max-width: 768px) {
+  .timeline {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .timeline::before {
+    top: 0;
+    left: 20px;
+    width: 4px;
+    height: 100%;
+  }
+  .timeline-step {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+  }
+  .timeline-step .icon {
+    margin-right: 15px;
+  }
+  .timeline-step p {
+    margin: 0;
+  }
+}
+</style>
+
+<!-- AJAX Live Update -->
+<script>
+function refreshOrderStatus() {
+  fetch("{% url 'track_order_api' order.id %}")
+    .then(response => response.json())
+    .then(data => {
+      document.getElementById("order-status").innerText = data.status;
+      const paymentStatus = document.getElementById("payment-status");
+      paymentStatus.className = data.payment_status === "Paid" ? "badge bg-success px-3 py-2" : "badge bg-danger px-3 py-2";
+      paymentStatus.innerText = data.payment_status;
+      document.getElementById("timeline").innerHTML = data.timeline_html;
+    })
+    .catch(error => console.error("Error fetching order:", error));
+}
+setInterval(refreshOrderStatus, 10000);
+</script>
+{% endblock body %}

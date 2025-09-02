@@ -1,0 +1,35 @@
+{% extends "authentication/baseauth.html" %}
+{% block title %}Login - aambika{% endblock title %}
+{% load static %}
+{% block content%}
+<div class="container" data-aos="fade-up">
+  <div class="row justify-content-center">
+    <div class="bg-dark text-light p-4 rounded shadow"
+         style="width: 350px; height: auto; max-height: 550px; margin: 50px auto;">
+
+      <h4 class="text-center mb-3">Login</h4>  
+      {% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+{% endif %} 
+<form method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+
+        <div class="mb-2">
+          <label class="form-label">Username</label>
+          <input type="text" class="form-control form-control-sm" name="username" required>
+        </div>
+
+        <div class="mb-2">
+          <label class="form-label">Password</label>
+          <input type="password" class="form-control form-control-sm" name="password" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-sm w-100">Login</button>
+        <p class="text-center mt-1 small fs-6">Don't have an account? <a href="{% url 'signup' %}" class="text-info">Sign Up</a></p>
+      </form>
+{% endblock content %}

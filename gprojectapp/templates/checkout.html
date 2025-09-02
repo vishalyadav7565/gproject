@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Checkout - Shrimati{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'assets/css/checkout.css' %}">
+{% endblock %}
+
+{% block body %}
+<div class="container mt-5" style="color: #2c3e50;">
+  <h2 class="mb-4">🛒 Checkout</h2>
+
+  {% if cart_items %}
+  <div class="table-responsive">
+    <table class="table table-bordered text-center align-middle checkout-table">
+      <thead class="table-dark">
+        <tr>
+          <th>Image</th>
+          <th>Product</th>
+          <th>Price</th>
+          <th>Quantity</th>
+          <th>Subtotal</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in cart_items %}
+        <tr>
+          <td>
+            <img src="{{ item.image.url }}" alt="{{ item.name }}" style="width:80px; height:50px; object-fit:cover;">
+          </td>
+          <td>{{ item.name }}</td>
+          <td>₹{{ item.price }}</td>
+          <td class="checkout-actions">
+            <a href="{% url 'update_cart' item.id 'decrease' %}" class="btn btn-sm btn-danger">-</a>
+            <span class="mx-2">{{ item.quantity }}</span>
+            <a href="{% url 'update_cart' item.id 'increase' %}" class="btn btn-sm btn-success">+</a>
+          </td>
+          <td>₹{{ item.subtotal }}</td>
+          <td>
+            <a href="{% url 'update_cart' item.id 'remove' %}" class="btn btn-sm btn-warning">Remove</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Total Price -->
+  <h3 class="text-end total-price">Total: ₹{{ total_price }}</h3>
+
+  <!-- Place Order Button -->
+  <div class="text-end mt-3">
+    <a href="{% url 'address_page' %}" class="btn btn-primary btn-lg sticky-order-btn">
+      Place Order
+    </a>
+  </div>
+
+  <!-- Clear Cart -->
+  <div class="text-start mt-3">
+    <a href="{% url 'clear_cart' %}" class="btn btn-danger">Clear Cart</a>
+  </div>
+
+  {% else %}
+    <p class="alert alert-info">
+      Your cart is empty. <a href="{% url 'index' %}">Continue shopping</a>
+    </p>
+  {% endif %}
+</div>
+{% endblock body %}

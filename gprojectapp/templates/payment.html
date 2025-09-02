@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Payment - Shrimati{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+  <h2 class="mb-4">💳 Choose Payment Method</h2>
+
+  <form method="post" class="p-4 shadow rounded bg-light">
+    {% csrf_token %}
+    {{ form.payment_method }}
+
+    <!-- UPI -->
+    <div id="upi-fields" class="payment-fields mt-3" style="display:none;">
+      <label>UPI ID</label>
+      {{ form.upi_id }}
+    </div>
+
+    <!-- Card -->
+    <div id="card-fields" class="payment-fields mt-3" style="display:none;">
+      <label>Card Number</label>
+      {{ form.card_number }}
+      <label>Expiry Date</label>
+      {{ form.expiry_date }}
+      <label>CVV</label>
+      {{ form.cvv }}
+    </div>
+
+    <!-- Wallet -->
+    <div id="wallet-fields" class="payment-fields mt-3" style="display:none;">
+      <label>Wallet Number</label>
+      {{ form.wallet_number }}
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-4">Proceed to Pay</button>
+  </form>
+</div>
+
+<script>
+  const radios = document.querySelectorAll("input[name='payment_method']");
+  const upiFields = document.getElementById("upi-fields");
+  const cardFields = document.getElementById("card-fields");
+  const walletFields = document.getElementById("wallet-fields");
+
+  radios.forEach(radio => {
+    radio.addEventListener("change", () => {
+      upiFields.style.display = radio.value === "upi" ? "block" : "none";
+      cardFields.style.display = (radio.value === "credit_card" || radio.value === "debit_card") ? "block" : "none";
+      walletFields.style.display = radio.value === "wallet" ? "block" : "none";
+    });
+  });
+</script>
+{% endblock %}

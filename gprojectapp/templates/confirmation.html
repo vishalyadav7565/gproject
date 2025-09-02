@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Order Confirmation{% endblock %}
+
+{% block body %}
+<div class="container mt-5 text-center">
+  <div class="card shadow p-4">
+    <h2 class="text-success">✅ Order Confirmed!</h2>
+    <p class="mt-3">Thank you, <strong>{{ full_name }}</strong>. Your order has been placed successfully.</p>
+
+    <!-- Order ID(s) -->
+    <h4 class="mt-4">🆔 Your Order ID(s)</h4>
+    <ul class="list-group mb-3">
+      {% for oid in order_ids %}
+        <li class="list-group-item list-group-item-info">{{ oid }}</li>
+      {% endfor %}
+    </ul>
+
+    <!-- Order Summary -->
+    <h4 class="mt-4">🛒 Order Summary</h4>
+    <ul class="list-group mb-3 text-start">
+      {% for order in orders %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          {{ order.product.name }} (x{{ order.quantity }})
+          <span>₹{{ order.total_price }}</span>
+        </li>
+      {% endfor %}
+    </ul>
+
+    <p><strong>Total Paid:</strong> ₹{{ total_amount }}</p>
+    <p><strong>Payment Method:</strong> {{ payment_method|title }}</p>
+
+    <!-- Delivery Details -->
+    <h4 class="mt-4">📦 Delivery Details</h4>
+    <p>
+      <strong>Name:</strong> {{ full_name }} <br>
+      <strong>Phone:</strong> {{ phone }} <br>
+      <strong>Address:</strong> {{ address }}
+    </p>
+
+    <!-- Continue Shopping -->
+    <a href="{% url 'index' %}" class="btn btn-primary mt-3">Continue Shopping</a>
+  </div>
+</div>
+{% endblock %}

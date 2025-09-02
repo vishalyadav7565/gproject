@@ -1,0 +1,113 @@
+/* Checkout Page Styles */
+
+/* Container */
+.container {
+  max-width: 1100px;
+}
+
+/* Checkout Title */
+h2 {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+/* Table Styling */
+.checkout-table {
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  background-color: #fff;
+}
+
+.checkout-table th {
+  background: linear-gradient(135deg, #0d6efd, #0a58ca);
+  color: #fff;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.checkout-table tbody tr:hover {
+  background-color: #f8f9fa;
+  transition: background 0.3s ease;
+}
+
+/* Product Image */
+.checkout-table img {
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+/* Quantity Controls */
+.checkout-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.checkout-actions a {
+  min-width: 32px;
+  text-align: center;
+  font-weight: bold;
+}
+
+/* Remove Button */
+.btn-warning {
+  background-color: #ffc107;
+  border: none;
+  color: #000;
+}
+.btn-warning:hover {
+  background-color: #e0a800;
+  color: #fff;
+}
+
+/* Total Price */
+.total-price {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #198754;
+  margin-top: 20px;
+  margin-bottom: 80px; /* space for sticky button */
+}
+
+/* Buttons */
+.btn-primary {
+  background: linear-gradient(135deg, #0d6efd, #0a58ca);
+  border: none;
+  font-weight: 500;
+}
+.btn-primary:hover {
+  background: linear-gradient(135deg, #0a58ca, #084298);
+}
+
+.btn-danger {
+  background: #dc3545;
+  border: none;
+}
+.btn-danger:hover {
+  background: #bb2d3b;
+}
+
+/* Sticky Place Order Button (Mobile First) */
+.sticky-order-btn {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  border-radius: 0;
+  padding: 15px;
+  font-size: 1.2rem;
+  z-index: 1000;
+}
+
+/* On larger screens, keep normal button style */
+@media (min-width: 768px) {
+  .sticky-order-btn {
+    position: static;
+    width: auto;
+    border-radius: 0.375rem;
+    padding: 10px 20px;
+    font-size: 1rem;
+  }
+}

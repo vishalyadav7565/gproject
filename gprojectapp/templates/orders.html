@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}My Orders{% endblock title %}
+
+{% block body %}
+<div class="container mt-5 mb-5">
+  <h2 class="text-center mb-4">📦 My Orders</h2>
+
+  {% if orders %}
+    <div class="row g-4">
+      {% for order in orders %}
+      <div class="col-12">
+        <div class="card shadow-sm border-0 rounded-3 h-100">
+          <div class="row g-0 align-items-center p-3">
+
+            <!-- Product Image -->
+            <div class="col-3 col-md-2 text-center">
+              {% if order.product.image %}
+                <img src="{{ order.product.image.url }}" alt="{{ order.product.name }}"
+                     class="img-fluid rounded"
+                     style="max-height: 100px; object-fit: contain;">
+              {% else %}
+                <span class="text-muted">No Image</span>
+              {% endif %}
+            </div>
+
+            <!-- Order Details -->
+            <div class="col-9 col-md-7 ps-3">
+              <h5 class="fw-semibold mb-1">{{ order.product.name }}</h5>
+              <p class="mb-1 text-muted small">
+                Qty: {{ order.quantity }} | Total: <strong>₹{{ order.total_price }}</strong>
+              </p>
+              <p class="mb-1 text-muted small">
+                Order ID: #{{ order.id }} | {{ order.order_date|date:"d M Y H:i" }}
+              </p>
+              <p class="mb-1 text-muted small">
+                Buyer: {{ order.user.first_name }} {{ order.user.last_name }}
+                {% if not order.user.first_name and not order.user.last_name %}
+                  {{ order.user.username }}
+                {% endif %}
+              </p>
+              <p class="mb-1 text-muted small">
+                📞 {{ order.phone }} <br>
+                📍 {{ order.address }}
+              </p>
+              <p class="mb-0">
+                {% if order.payment_status == "Paid" %}
+                  <span class="badge bg-success">Paid</span>
+                {% else %}
+                  <span class="badge bg-danger">Pending</span>
+                {% endif %}
+              </p>
+            </div>
+
+            <!-- Order Status + Actions -->
+            <div class="col-12 col-md-3 text-md-end mt-3 mt-md-0">
+              <p class="mb-2">
+                {% if order.status == "Confirmed" %}
+                  <span class="badge bg-primary">Confirmed</span>
+                {% elif order.status == "Processing" %}
+                  <span class="badge bg-info text-dark">Processing</span>
+                {% elif order.status == "Dispatched" %}
+                  <span class="badge bg-warning text-dark">Dispatched</span>
+                {% elif order.status == "Shipped" %}
+                  <span class="badge bg-secondary">Shipped</span>
+                {% elif order.status == "Delivered" %}
+                  <span class="badge bg-success">Delivered</span>
+                {% elif order.status == "Cancelled" %}
+                  <span class="badge bg-danger">Cancelled</span>
+                {% else %}
+                  <span class="badge bg-dark">{{ order.status }}</span>
+                {% endif %}
+              </p>
+
+              <!-- Timeline Progress -->
+              <div class="progress mb-2" style="height: 6px;">
+                <div class="progress-bar 
+                  {% if order.status == 'Pending' %}bg-secondary{% endif %}
+                  {% if order.status == 'Processing' %}bg-info{% endif %}
+                  {% if order.status == 'Dispatched' %}bg-warning{% endif %}
+                  {% if order.status == 'Shipped' %}bg-primary{% endif %}
+                  {% if order.status == 'Delivered' %}bg-success{% endif %}"
+                  role="progressbar"
+                  style="width:
+                    {% if order.status == 'Pending' %}10%
+                    {% elif order.status == 'Processing' %}30%
+                    {% elif order.status == 'Dispatched' %}50%
+                    {% elif order.status == 'Shipped' %}75%
+                    {% elif order.status == 'Delivered' %}100%
+                    {% else %}5%
+                    {% endif %}">
+                </div>
+              </div>
+
+              {% if order.latitude and order.longitude %}
+                <a href="https://www.google.com/maps/search/?api=1&query={{ order.latitude }},{{ order.longitude }}"
+                   target="_blank"
+                   class="btn btn-sm btn-outline-primary w-100 mb-2">📍 Location</a>
+              {% endif %}
+
+              <a href="{% url 'track_order' order.id %}"
+                 class="btn btn-sm btn-primary w-100">🚚 Track</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="text-center mt-5">
+      <p class="text-muted">🙁 You have no orders yet.</p>
+      <a href="{% url 'product_list' %}" class="btn btn-primary mt-3">Shop Now</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock body %}
