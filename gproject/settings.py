@@ -36,7 +36,9 @@ TEMPLATES = [
 SECRET_KEY = os.environ.get("SECRET_KEY", "unsafe-secret-key")
 DEBUG = os.environ.get("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = ["*", "digitalcost.live", "www.digitalcost.live"]
+ALLOWED_HOSTS = ["gproject-production.up.railway.app"]
+
+CSRF_TRUSTED_ORIGINS = ["https://gproject-production.up.railway.app"]
 
 # Apps
 INSTALLED_APPS = [
