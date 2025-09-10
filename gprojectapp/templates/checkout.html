@@ -33,13 +33,13 @@
           <td>{{ item.name }}</td>
           <td>₹{{ item.price }}</td>
           <td class="checkout-actions">
-            <a href="{% url 'update_cart' item.id 'decrease' %}" class="btn btn-sm btn-danger">-</a>
+            <a href="{% url 'update_cart' item.key 'decrease' %}" class="btn btn-sm btn-danger">-</a>
             <span class="mx-2">{{ item.quantity }}</span>
-            <a href="{% url 'update_cart' item.id 'increase' %}" class="btn btn-sm btn-success">+</a>
+            <a href="{% url 'update_cart' item.key 'increase' %}" class="btn btn-sm btn-success">+</a>
           </td>
           <td>₹{{ item.subtotal }}</td>
           <td>
-            <a href="{% url 'update_cart' item.id 'remove' %}" class="btn btn-sm btn-warning">Remove</a>
+            <a href="{% url 'update_cart' item.key 'remove' %}" class="btn btn-sm btn-warning">Remove</a>
           </td>
         </tr>
         {% endfor %}

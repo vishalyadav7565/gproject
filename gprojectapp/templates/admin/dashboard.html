@@ -1,0 +1,47 @@
+{% extends "admin/base_site.html" %}
+{% block content %}
+<div class="container">
+  <h1 class="my-3">📊 Dashboard Overview</h1>
+  <div class="row">
+    <div class="col-md-3">
+      <div class="card bg-primary text-white p-3 shadow-sm rounded">
+        <h4>Total Orders</h4>
+        <p class="fs-4">{{ total_orders }}</p>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card bg-success text-white p-3 shadow-sm rounded">
+        <h4>Total Sales</h4>
+        <p class="fs-4">₹{{ total_sales }}</p>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card bg-warning text-dark p-3 shadow-sm rounded">
+        <h4>Pending Orders</h4>
+        <p class="fs-4">{{ pending_orders }}</p>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card bg-info text-white p-3 shadow-sm rounded">
+        <h4>Products</h4>
+        <p class="fs-4">{{ total_products }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-3">
+    <div class="col-md-6">
+      <div class="card bg-secondary text-white p-3 shadow-sm rounded">
+        <h4>Categories</h4>
+        <p class="fs-4">{{ total_categories }}</p>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card bg-dark text-white p-3 shadow-sm rounded">
+        <h4>Subcategories</h4>
+        <p class="fs-4">{{ total_subcategories }}</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,29 +1,54 @@
-from sys import path
 from django.contrib import admin
-# Change site header, title, and index title
-admin.site.site_header = "Shrimati Admin Panel"
-admin.site.site_title = "Shrimati Admin"
-admin.site.index_title = "Welcome to Shrimati Administration"
-from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from django.contrib.auth.models import User
 from django.utils.html import format_html
 from django.shortcuts import redirect
 from django.urls import path, reverse
 from .models import (
     Contact, Product, Order, UserProfile, Review, Banner,
-    Category, SubCategory,Specification,Color, timezone
+    Category, SubCategory, Specification, Color, timezone, MegaMenu
 )
 
 # -------------------------
-# Category & SubCategory
+# Branding
+# -------------------------
+admin.site.site_header = "Shrimati Admin Panel"
+admin.site.site_title = "Shrimati Admin"
+admin.site.index_title = "Welcome to Shrimati Administration"
+
+
+# -------------------------
+# SubCategory Inline (inside Category)
+# -------------------------
+class SubCategoryInline(admin.TabularInline):
+    model = SubCategory
+    extra = 1
+    show_change_link = True
+
+
+# -------------------------
+# Category Admin
 # -------------------------
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ("name", "slug")
+    list_display = ("name", "slug", "show_image")
     prepopulated_fields = {"slug": ("name",)}
     search_fields = ("name",)
+    inlines = [SubCategoryInline]
+
+    def image_preview(self, obj):
+        if obj.image:
+            return f"<img src='{obj.image.url}' width='50' height='50' style='border-radius:50%;'/>"
+        return "No Image"
+    image_preview.allow_tags = True
+    image_preview.short_description = "Preview"
+    def show_image(self, obj):
+        if obj.image:
+            return format_html('<img src="{}" style="width:50px;height:50px;object-fit:cover;border-radius:50%;" />', obj.image.url)
+        return "❌ No Image"
 
 
+# -------------------------
+# SubCategory Admin
+# -------------------------
 @admin.register(SubCategory)
 class SubCategoryAdmin(admin.ModelAdmin):
     list_display = ("name", "category", "slug")
@@ -31,10 +56,28 @@ class SubCategoryAdmin(admin.ModelAdmin):
     list_filter = ("category",)
     search_fields = ("name", "category__name")
 
+
 # -------------------------
-# Product
+# Product Admin
 # -------------------------
-#----colors
+@admin.register(Product)
+class ProductAdmin(admin.ModelAdmin):
+    list_display = ("name", "price", "category", "subcategory", "show_image")
+    list_filter = ("category", "subcategory", "price")
+    search_fields = ("name", "category__name", "subcategory__name")
+    list_editable = ("price",)
+    ordering = ("-id",)
+
+    def show_image(self, obj):
+        if obj.image:
+            return format_html('<img src="{}" style="width:50px;height:50px;object-fit:cover;" />', obj.image.url)
+        return "❌ No Image"
+    show_image.short_description = "Preview"
+
+
+# -------------------------
+# Order Admin (with action buttons)
+# -------------------------
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     list_display = (
@@ -65,7 +108,6 @@ class OrderAdmin(admin.ModelAdmin):
     # Inline buttons depending on current status
     def action_buttons(self, obj):
         buttons = []
-
         if obj.status == "Pending":
             buttons.append(f'<a class="button button-processing" href="mark-processing/{obj.id}/">⚙️ Process</a>')
         if obj.status == "Processing":
@@ -76,7 +118,6 @@ class OrderAdmin(admin.ModelAdmin):
             buttons.append(f'<a class="button button-deliver" href="mark-delivered/{obj.id}/">✅ Deliver</a>')
         if obj.status not in ["Delivered", "Cancelled"]:
             buttons.append(f'<a class="button button-cancel" href="mark-cancelled/{obj.id}/">❌ Cancel</a>')
-
         return format_html(" &nbsp; ".join(buttons))
     action_buttons.short_description = "Actions"
 
@@ -119,9 +160,8 @@ class OrderAdmin(admin.ModelAdmin):
         return redirect(reverse("admin:gprojectapp_order_changelist"))
 
     class Media:
-        css = {
-            "all": ("admin/css/admin.css",)  # ✅ use your existing file
-        }
+        css = {"all": ("admin/css/admin.css",)}  # ✅ use your custom file
+
 
 # -------------------------
 # UserProfile
@@ -160,5 +200,11 @@ class BannerAdmin(admin.ModelAdmin):
 class ContactAdmin(admin.ModelAdmin):
     list_display = ("name", "email", "phone", "message")
     search_fields = ("name", "email", "phone")
+
     
-  
+@admin.register(MegaMenu)
+class MegaMenuAdmin(admin.ModelAdmin):
+    list_display = ("id", "title", "category", "is_active")
+    list_filter = ("is_active", "category")
+    search_fields = ("title", "category__name")
+    list_editable = ("is_active",)

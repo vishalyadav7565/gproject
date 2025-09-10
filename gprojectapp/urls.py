@@ -4,10 +4,11 @@ from . import views
 urlpatterns = [
     path('', views.index, name='index'),
     path('add-to-cart/<int:product_id>/', views.add_to_cart, name='add_to_cart'),
-    path('remove-from-cart/<int:product_id>/', views.remove_from_cart, name='remove_from_cart'),
-    path('clear-from-cart/<int:product_id>/', views.clear_from_cart, name='clear_from_cart'),
+    path('remove-from-cart/<str:product_id>/', views.remove_from_cart, name='remove_from_cart'),
+    path('clear-from-cart/<str:product_id>/', views.clear_from_cart, name='clear_from_cart'),
     path('clear-cart/', views.clear_cart, name='clear_cart'),
-    path('update-cart/<int:product_id>/<str:action>/', views.update_cart, name='update_cart'),
+    path('update-cart/<str:product_id>/<str:action>/', views.update_cart, name='update_cart'),
+
 
     # Checkout flow
     path('checkout/', views.checkout, name='checkout'),
@@ -25,8 +26,8 @@ urlpatterns = [
     path("orders/<int:order_id>/track/", views.track_order, name="track_order"),
 path("orders/<int:order_id>/track/api/", views.track_order_api, name="track_order_api"),
     path('products/<int:product_id>/', views.product_detail, name='product_detail'),
+     path("search/", views.search_products, name="search_products"),
     path('search/', views.product_list, name='search'),
-    
-
+      path("category/<int:category_id>/", views.products_by_category, name="products_by_category"),
+    path("subcategory/<int:subcategory_id>/", views.products_by_subcategory, name="products_by_subcategory"),
 ]
-

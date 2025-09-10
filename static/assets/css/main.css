@@ -845,7 +845,47 @@ section,
 
 /*--------------------------------------------------------------
 
---------------------------------------------------------------*/
+/* ============================= */
+/* Mega Menu / Navbar */
+/* ============================= */
+#topbar {
+  position: relative;
+  z-index: 1100; /* always above hero */
+}
+
+.navbar {
+  position: relative;
+  z-index: 1101;
+}
+
+/* Category cards */
+.category-card {
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+.category-card:hover {
+  transform: translateY(-5px);
+}
+
+/* Dropdowns */
+.dropdown-container {
+  position: relative;
+  z-index: 1200;
+}
+.dropdown-content {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+  padding: 20px;
+}
+.hover-card:hover {
+  transform: translateY(-5px);
+  transition: 0.3s ease;
+}
+
+/* ============================= */
+/* Hero Banner */
+/* ============================= */
 .hero {
   width: 100%;
   min-height: 100vh;
@@ -854,6 +894,8 @@ section,
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 1; /* lower than navbar */
+  overflow: hidden;
 }
 
 .hero img {
@@ -863,7 +905,7 @@ section,
   width: 100%;
   height: 100%;
   object-fit: cover;
-  z-index: 1;
+  z-index: 0;
 }
 
 .hero:before {
@@ -871,18 +913,20 @@ section,
   background: color-mix(in srgb, var(--background-color), transparent 30%);
   position: absolute;
   inset: 0;
-  z-index: 2;
+  z-index: 1;
 }
 
 .hero .container {
   position: relative;
-  z-index: 3;
+  z-index: 2;
+  text-align: center;
 }
 
 .hero h2 {
   margin: 0;
   font-size: 48px;
   font-weight: 700;
+  color: var(--heading-color);
 }
 
 .hero p {
@@ -915,11 +959,12 @@ section,
   .hero h2 {
     font-size: 32px;
   }
-
   .hero p {
     font-size: 18px;
   }
 }
+
+
 /*--------------------------------------------------------------
 # About Section
 --------------------------------------------------------------*/

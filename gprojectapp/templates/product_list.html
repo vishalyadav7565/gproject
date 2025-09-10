@@ -5,61 +5,132 @@
 
 {% block body %}
 <div class="container mt-4">
-
-  <!-- Search Bar & Filters -->
   <div class="row">
-    <div class="col-md-3">
-      <!-- Categories -->
-      <h5>Categories</h5>
-      <form method="get" id="filterForm">
-        {% for cat in categories %}
-        <div class="form-check">
-          <input class="form-check-input" type="checkbox" name="category" value="{{ cat.name }}"
-                 {% if cat.name in selected_categories %}checked{% endif %} onchange="document.getElementById('filterForm').submit();">
-          <label class="form-check-label">{{ cat.name }}</label>
+    <!-- Sidebar Filters (Desktop) -->
+    <div class="col-lg-3 col-md-4 d-none d-md-block">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          {% include "partials/filter_form.html" %}
         </div>
-        {% endfor %}
-
-        <hr>
-        <!-- Price Range -->
-        <h5>Price Range</h5>
-        <input type="number" name="min_price" class="form-control mb-2" placeholder="Min" value="{{ min_price }}">
-        <input type="number" name="max_price" class="form-control mb-2" placeholder="Max" value="{{ max_price }}">
-        <button type="submit" class="btn btn-primary btn-sm">Apply</button>
-
-        <hr>
-        <!-- Sort -->
-        <h5>Sort By</h5>
-        <select name="sort_by" class="form-select" onchange="document.getElementById('filterForm').submit();">
-          <option value="">--Select--</option>
-          <option value="price_asc" {% if sort_by == 'price_asc' %}selected{% endif %}>Price: Low to High</option>
-          <option value="price_desc" {% if sort_by == 'price_desc' %}selected{% endif %}>Price: High to Low</option>
-        </select>
-      </form>
+      </div>
     </div>
 
     <!-- Product List -->
-    <div class="col-md-9">
-      <h4>Search Results</h4>
-      <div class="row">
+    <div class="col-lg-9 col-md-8">
+      <h4 class="mb-3">Search Results</h4>
+
+      <!-- Applied Filters Badges -->
+      {% if selected_categories or selected_subcategories or selected_brands or min_price or max_price %}
+      <div class="mb-3">
+        <strong>Applied Filters:</strong>
+        <div class="d-flex flex-wrap mt-2 gap-2">
+          {% for cat in selected_categories %}
+            <span class="badge bg-primary">
+              {{ cat }} <a href="?{% for c in selected_categories %}{% if c != cat %}category={{ c }}&{% endif %}{% endfor %}" class="text-white ms-1">✖</a>
+            </span>
+          {% endfor %}
+          {% for sub in selected_subcategories %}
+            <span class="badge bg-success">
+              {{ sub }} <a href="?{% for s in selected_subcategories %}{% if s != sub %}subcategory={{ s }}&{% endif %}{% endfor %}" class="text-white ms-1">✖</a>
+            </span>
+          {% endfor %}
+          {% for brand in selected_brands %}
+            <span class="badge bg-warning text-dark">
+              {{ brand }} <a href="?{% for b in selected_brands %}{% if b != brand %}brand={{ b }}&{% endif %}{% endfor %}" class="text-dark ms-1">✖</a>
+            </span>
+          {% endfor %}
+          {% if min_price or max_price %}
+            <span class="badge bg-danger">
+              Price: ₹{{ min_price|default:"0" }} - ₹{{ max_price|default:"∞" }}
+              <a href="{% url 'search_products' %}" class="text-white ms-1">✖</a>
+            </span>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Products Grid -->
+      <div class="row g-3">
         {% if products %}
           {% for product in products %}
-          <div class="col-md-4 mb-4">
-            <div class="card h-100">
-              <img src="{{ product.image.url }}" class="card-img-top" style="height:200px; object-fit:cover;">
-              <div class="card-body">
-                <h5 class="card-title">{{ product.name }}</h5>
-                <p class="card-text">₹{{ product.price }}</p>
-                <a href="{% url 'product_detail' product.id %}" class="btn btn-sm btn-primary">View</a>
+          <div class="col-lg-4 col-md-6 col-sm-6 col-12">
+            <div class="card h-100 shadow-sm">
+              <img src="{{ product.image.url }}" class="card-img-top img-fluid"
+                   style="height:200px; object-fit:cover;" alt="{{ product.name }}">
+              <div class="card-body d-flex flex-column">
+                <h6 class="card-title">{{ product.name }}</h6>
+                <p class="card-text fw-bold mb-2">₹{{ product.price }}</p>
+                <a href="{% url 'product_detail' product.id %}" class="btn btn-sm btn-primary mt-auto">View</a>
               </div>
             </div>
           </div>
           {% endfor %}
         {% else %}
-          <p>No products found matching your criteria.</p>
+          <p class="text-muted">No products found matching your criteria.</p>
         {% endif %}
       </div>
     </div>
   </div>
 </div>
+
+<!-- Mobile Filter Off-Canvas -->
+<div class="offcanvas offcanvas-start" tabindex="-1" id="mobileFilters"
+     aria-labelledby="mobileFiltersLabel" data-bs-backdrop="true" data-bs-scroll="false">
+  <div class="offcanvas-header border-bottom">
+    <h5 class="offcanvas-title fw-bold" id="mobileFiltersLabel">Filters</h5>
+    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
+            aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body">
+    {% include "partials/filter_form.html" %}
+  </div>
+</div>
+
+<!-- Sticky Filter Button (Mobile Only) -->
+<button class="btn btn-primary rounded-circle shadow position-relative d-md-none"
+        type="button"
+        data-bs-toggle="offcanvas"
+        data-bs-target="#mobileFilters"
+        aria-controls="mobileFilters"
+        style="position: fixed; bottom: 20px; right: 20px; width: 55px; height: 55px; z-index: 1050;">
+  <i class="bi bi-funnel-fill fs-5"></i>
+
+  <!-- 🔹 Active Filter Badge -->
+  {% with selected_categories|length as c %}
+    {% with selected_subcategories|length as s %}
+      {% with selected_brands|length as b %}
+        {% with c|add:s|add:b as base_count %}
+          {% with base_count|add:min_price|yesno:"1,0"|add:max_price|yesno:"1,0" as total_filters %}
+            {% if total_filters|add:"0" > 0 %}
+              <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                {{ total_filters }}
+              </span>
+            {% endif %}
+          {% endwith %}
+        {% endwith %}
+      {% endwith %}
+    {% endwith %}
+  {% endwith %}
+</button>
+
+
+<!-- Swipe to Close Script -->
+  <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const offcanvasEl = document.getElementById('mobileFilters');
+    let startX = 0;
+
+    offcanvasEl.addEventListener("touchstart", e => {
+      startX = e.touches[0].clientX;
+    });
+
+    offcanvasEl.addEventListener("touchmove", e => {
+      let currentX = e.touches[0].clientX;
+      if (startX < 50 && currentX - startX > 100) {
+        bootstrap.Offcanvas.getInstance(offcanvasEl).hide();
+      }
+    });
+  });
+</script>
+
 {% endblock %}

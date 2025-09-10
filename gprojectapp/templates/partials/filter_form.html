@@ -1,0 +1,64 @@
+<form method="get" id="filterForm">
+
+  <!-- Categories -->
+  <h6 class="fw-bold">Categories</h6>
+  {% for cat in categories %}
+  <div class="form-check">
+    <input class="form-check-input" type="checkbox" name="category" value="{{ cat.slug }}"
+           {% if cat.slug in selected_categories %}checked{% endif %}
+           onchange="document.getElementById('filterForm').submit();">
+    <label class="form-check-label small">{{ cat.name }}</label>
+  </div>
+  {% endfor %}
+
+  <hr>
+  <!-- Subcategories -->
+  <h6 class="fw-bold">Subcategories</h6>
+  {% for sub in subcategories %}
+  <div class="form-check">
+    <input class="form-check-input" type="checkbox" name="subcategory" value="{{ sub.slug }}"
+           {% if sub.slug in selected_subcategories %}checked{% endif %}
+           onchange="document.getElementById('filterForm').submit();">
+    <label class="form-check-label small">{{ sub.name }}</label>
+  </div>
+  {% endfor %}
+
+  <hr>
+  <!-- Brands -->
+  <h6 class="fw-bold">Brands</h6>
+  {% for brand in brands %}
+  <div class="form-check">
+    <input class="form-check-input" type="checkbox" name="brand" value="{{ brand }}"
+           {% if brand in selected_brands %}checked{% endif %}
+           onchange="document.getElementById('filterForm').submit();">
+    <label class="form-check-label small">{{ brand }}</label>
+  </div>
+  {% endfor %}
+
+  <hr>
+  <!-- Price Range -->
+  <h6 class="fw-bold">Price Range</h6>
+  <div class="row g-2">
+    <div class="col-6">
+      <input type="number" name="min_price" class="form-control form-control-sm" placeholder="Min" value="{{ min_price }}">
+    </div>
+    <div class="col-6">
+      <input type="number" name="max_price" class="form-control form-control-sm" placeholder="Max" value="{{ max_price }}">
+    </div>
+  </div>
+  <button type="submit" class="btn btn-primary btn-sm mt-2 w-100">Apply</button>
+
+  <hr>
+  <!-- Sort -->
+  <h6 class="fw-bold">Sort By</h6>
+  <select name="sort_by" class="form-select form-select-sm mb-2"
+          onchange="document.getElementById('filterForm').submit();">
+    <option value="">--Select--</option>
+    <option value="price_asc" {% if sort_by == 'price_asc' %}selected{% endif %}>Price: Low to High</option>
+    <option value="price_desc" {% if sort_by == 'price_desc' %}selected{% endif %}>Price: High to Low</option>
+    <option value="newest" {% if sort_by == 'newest' %}selected{% endif %}>Newest</option>
+  </select>
+
+  <!-- Clear Filters -->
+  <a href="{% url 'search_products' %}" class="btn btn-outline-secondary btn-sm w-100">Clear Filters</a>
+</form>

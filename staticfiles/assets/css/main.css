@@ -445,6 +445,101 @@ h6 {
     display: block;
   }
 }
+  .product-card {
+  transition: transform 0.3s, box-shadow 0.3s;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+}
+
+.product-img {
+  height: 220px;
+  object-fit: cover;
+  transition: transform 0.3s;
+}
+
+.product-card:hover .product-img {
+  transform: scale(1.05);
+}
+
+.card-title {
+  font-weight: 600;
+}
+
+.card-footer .btn {
+  border-radius: 8px;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.card-footer .btn:hover {
+  background-color: #28a745d1;
+}
+/* Better dropdown look */
+.dropdown-menu {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Hover effect on cards */
+.hover-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.hover-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+}
+
+/* Dropdown item hover */
+.dropdown-item:hover {
+  color: #0d6efd !important;
+  background: #f8f9fa;
+  border-radius: 6px;
+  transition: 0.2s;
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+/* Mobile optimization */
+@media (max-width: 768px) {
+  .dropdown-menu {
+    padding: 1rem !important;
+  }
+
+  .card {
+    text-align: left; /* more natural for mobile */
+  }
+
+  .card img {
+    height: 120px;
+    object-fit: cover;
+  }
+
+  .card-body h6 {
+    font-size: 1rem;
+  }
+
+  .dropdown-item {
+    padding: 6px 10px;
+    font-size: 0.9rem;
+    display: inline-block; /* show as chips on mobile */
+    margin: 2px 5px;
+    background: #f8f9fa;
+    border-radius: 20px;
+  }
+
+  .dropdown-item:hover {
+    background: #e9ecef;
+  }
+}
+
+
 
 /*--------------------------------------------------------------
 # Global Footer
@@ -750,7 +845,47 @@ section,
 
 /*--------------------------------------------------------------
 
---------------------------------------------------------------*/
+/* ============================= */
+/* Mega Menu / Navbar */
+/* ============================= */
+#topbar {
+  position: relative;
+  z-index: 1100; /* always above hero */
+}
+
+.navbar {
+  position: relative;
+  z-index: 1101;
+}
+
+/* Category cards */
+.category-card {
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+.category-card:hover {
+  transform: translateY(-5px);
+}
+
+/* Dropdowns */
+.dropdown-container {
+  position: relative;
+  z-index: 1200;
+}
+.dropdown-content {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+  padding: 20px;
+}
+.hover-card:hover {
+  transform: translateY(-5px);
+  transition: 0.3s ease;
+}
+
+/* ============================= */
+/* Hero Banner */
+/* ============================= */
 .hero {
   width: 100%;
   min-height: 100vh;
@@ -759,6 +894,8 @@ section,
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 1; /* lower than navbar */
+  overflow: hidden;
 }
 
 .hero img {
@@ -768,7 +905,7 @@ section,
   width: 100%;
   height: 100%;
   object-fit: cover;
-  z-index: 1;
+  z-index: 0;
 }
 
 .hero:before {
@@ -776,18 +913,20 @@ section,
   background: color-mix(in srgb, var(--background-color), transparent 30%);
   position: absolute;
   inset: 0;
-  z-index: 2;
+  z-index: 1;
 }
 
 .hero .container {
   position: relative;
-  z-index: 3;
+  z-index: 2;
+  text-align: center;
 }
 
 .hero h2 {
   margin: 0;
   font-size: 48px;
   font-weight: 700;
+  color: var(--heading-color);
 }
 
 .hero p {
@@ -820,11 +959,12 @@ section,
   .hero h2 {
     font-size: 32px;
   }
-
   .hero p {
     font-size: 18px;
   }
 }
+
+
 /*--------------------------------------------------------------
 # About Section
 --------------------------------------------------------------*/

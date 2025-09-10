@@ -204,6 +204,63 @@
       </div>
 
     </div>
+     <style>
+    /* --- Mobile Nav Drawer --- */
+    #navmenu {
+      position: fixed;
+      top: 0;
+      right: -100%;
+      width: 75%;        /* drawer width */
+      height: 100vh;
+      background: #1a1a1a;
+      padding: 40px 20px;
+      transition: right 0.3s ease;
+      z-index: 9999;
+    }
+
+    #navmenu ul {
+      flex-direction: column;
+      gap: 20px;
+      list-style: none;
+      padding-left: 0;
+    }
+
+    #navmenu.navmenu-active {
+      right: 0;
+    }
+
+    /* Overlay */
+    body.nav-open::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100vh;
+      background: rgba(0,0,0,0.6);
+      z-index: 9998;
+    }
+
+    /* Desktop override */
+    @media (min-width: 1200px) {
+      #navmenu {
+        position: static;
+        height: auto;
+        width: auto;
+        background: transparent;
+        padding: 0;
+        display: block !important;
+      }
+
+      #navmenu ul {
+        flex-direction: row;
+        gap: 15px;
+      }
+
+      .mobile-nav-toggle {
+        display: none;
+      }
+    }
+  </style>
   </header>
 
   <!-- ✅ Mobile Search Bar -->
@@ -215,135 +272,14 @@
       <i class="bi bi-search"></i>
     </button>
   </form>
-    <!-- End Header -->
-   <section id="topbar" class="topbar d-flex align-items-center mt-5 z-1055">
-  {% block mega_menu %}
-  <!-- Mega Menu Start -->
-  <nav class="navbar navbar-expand-lg navbar-light bg-white w-100 shadow-sm rounded-3">
-    <div class="container-fluid">
-
-      <!-- Toggler for mobile -->
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" 
-              data-bs-target="#navbarMega" aria-controls="navbarMega" 
-              aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-
-      <!-- Mega Menu Content -->
-      <div class="collapse navbar-collapse" id="navbarMega">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-
-          <!-- Fashion -->
-          <li class="nav-item dropdown position-static">
-            <a class="nav-link dropdown-toggle fw-bold d-flex align-items-center text-dark px-3 py-2" 
-               href="#" id="fashionDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <img src="{% static 'assets/img/fashion.jpeg' %}" class="me-2 rounded-circle shadow-sm" style="width:32px; height:32px;" alt="Fashion">
-              Fashion
-            </a>
-            <div class="dropdown-menu w-100 mt-0 border-0 shadow-lg rounded-3 p-4 bg-light  z-[1055] bg-white shadow-lg" aria-labelledby="fashionDropdown">
-              <div class="row g-4">
-                <!-- Men's -->
-                <div class="col-md-3">
-                  <div class="card h-100 text-center border-0 shadow-sm rounded-3 hover-card" style="opacity:0.92;">
-                    <img src="{% static 'assets/img/mens-topwear.jpg' %}" class="card-img-top rounded-top" alt="Men's Top Wear">
-                    <div class="card-body">
-                      <h6 class="fw-bold text-primary mb-3">Men's Top Wear</h6>
-                      <a class="dropdown-item" href="#">T-Shirts</a>
-                      <a class="dropdown-item" href="#">Casual Shirts</a>
-                      <a class="dropdown-item" href="#">Formal Shirts</a>
-                      <a class="dropdown-item" href="#">Kurtas</a>
-                    </div>
-                  </div>
-                </div>
-                <!-- Women's -->
-                <div class="col-md-3">
-                  <div class="card h-100 text-center border-0 shadow-sm rounded-3 hover-card">
-                    <img src="{% static 'assets/img/women-wear.jpg' %}" class="card-img-top rounded-top" alt="Women Wear">
-                    <div class="card-body">
-                      <h6 class="fw-bold text-primary mb-3">Women's Wear</h6>
-                      <a class="dropdown-item" href="#">Ethnic</a>
-                      <a class="dropdown-item" href="#">Western</a>
-                      <a class="dropdown-item" href="#">Sarees</a>
-                      <a class="dropdown-item" href="#">Dresses</a>
-                    </div>
-                  </div>
-                </div>
-                <!-- Accessories -->
-                <div class="col-md-3">
-                  <div class="card h-100 text-center border-0 shadow-sm rounded-3 hover-card">
-                    <img src="{% static 'assets/img/accessories.jpg' %}" class="card-img-top rounded-top" alt="Accessories">
-                    <div class="card-body">
-                      <h6 class="fw-bold text-primary mb-3">Accessories</h6>
-                      <a class="dropdown-item" href="#">Watches</a>
-                      <a class="dropdown-item" href="#">Bags</a>
-                      <a class="dropdown-item" href="#">Sunglasses</a>
-                      <a class="dropdown-item" href="#">Wallets</a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </li>
-
-          <!-- Electronics -->
-          <li class="nav-item dropdown position-static">
-            <a class="nav-link dropdown-toggle fw-bold d-flex align-items-center text-dark px-3 py-2" 
-               href="#" id="electronicsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <img src="{% static 'assets/img/electronics.jpg' %}" class="me-2 rounded-circle shadow-sm" style="width:32px; height:32px;" alt="Electronics">
-              Electronics
-            </a>
-            <div class="dropdown-menu w-100 mt-0 border-0 shadow-lg rounded-3 p-4 bg-light" aria-labelledby="electronicsDropdown">
-              <div class="row g-4">
-                <!-- Mobiles -->
-                <div class="col-md-3">
-                  <div class="card h-100 text-center border-0 shadow-sm rounded-3 hover-card">
-                    <img src="{% static 'assets/img/mobiles.jpg' %}" class="card-img-top rounded-top" alt="Mobiles">
-                    <div class="card-body">
-                      <h6 class="fw-bold text-primary mb-3">Mobiles</h6>
-                      <a class="dropdown-item" href="#">Smartphones</a>
-                      <a class="dropdown-item" href="#">Feature Phones</a>
-                    </div>
-                  </div>
-                </div>
-                <!-- Laptops -->
-                <div class="col-md-3">
-                  <div class="card h-100 text-center border-0 shadow-sm rounded-3 hover-card">
-                    <img src="{% static 'assets/img/laptops.jpg' %}" class="card-img-top rounded-top" alt="Laptops">
-                    <div class="card-body">
-                      <h6 class="fw-bold text-primary mb-3">Laptops</h6>
-                      <a class="dropdown-item" href="#">Gaming Laptops</a>
-                      <a class="dropdown-item" href="#">Ultrabooks</a>
-                    </div>
-                  </div>
-                </div>
-                <!-- Accessories -->
-                <div class="col-md-3">
-                  <div class="card h-100 text-center border-0 shadow-sm rounded-3 hover-card">
-                    <img src="{% static 'assets/img/electronics-accessories.jpg' %}" class="card-img-top rounded-top" alt="Electronics Accessories">
-                    <div class="card-body">
-                      <h6 class="fw-bold text-primary mb-3">Accessories</h6>
-                      <a class="dropdown-item" href="#">Headphones</a>
-                      <a class="dropdown-item" href="#">Power Banks</a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </li>
-
-        </ul>
-      </div>
-    </div>
-  </nav>
-  <!-- Mega Menu End -->
-  {% endblock mega_menu %}
-</section>
 
 </div>
-
+ 
 
      <!-- ======= Hero Section ======= -->
-  <section id="hero">
+  <section id="hero mt-">
+     {% block mega_menu%}{% endblock %}
+     
     {% block banner %}{% endblock %}
   </section>
 
@@ -431,43 +367,47 @@
   <script src="{% static 'assets/js/main.js' %}"></script>
 
   <!-- Mobile Nav Toggle & Cart Animation -->
+ <!-- Mobile Nav JS -->
   <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      const navToggle = document.querySelector(".mobile-nav-toggle");
-      const navMenu = document.querySelector("#navmenu");
-      const body = document.body;
+  document.addEventListener("DOMContentLoaded", function () {
+  const navToggle = document.querySelector(".mobile-nav-toggle");
+  const navMenu = document.querySelector("#navmenu");
+  const body = document.body;
 
-      navToggle.addEventListener("click", function () {
-        navMenu.classList.toggle("navmenu-active");
-        body.classList.toggle("nav-open");
+  // Toggle menu on button click
+  navToggle.addEventListener("click", function (e) {
+    e.stopPropagation(); // prevent click from bubbling
+    navMenu.classList.toggle("navmenu-active");
+    body.classList.toggle("nav-open");
+    this.classList.toggle("bi-list");
+    this.classList.toggle("bi-x");
+  });
 
-        // swap icon
-        this.classList.toggle("bi-list");
-        this.classList.toggle("bi-x");
-      });
-    });
-
-    // Function to update cart count with bounce animation
-    function updateCartCount(newCount) {
-      const cartCountEl = document.getElementById("cart-count");
-      if (cartCountEl) {
-        cartCountEl.textContent = newCount;
-        cartCountEl.classList.add("animate");
-        setTimeout(() => cartCountEl.classList.remove("animate"), 400);
-      }
-    }
-    document.addEventListener("DOMContentLoaded", function() {
-    // Only focus if mobile screen size
-    if (window.innerWidth <= 768) {
-      const mobileSearchInput = document.getElementById("mobile-search-input");
-      if (mobileSearchInput) {
-        mobileSearchInput.focus();
+  // Close menu when clicking outside
+  document.addEventListener("click", function (e) {
+    if (body.classList.contains("nav-open")) {
+      if (!navMenu.contains(e.target) && !navToggle.contains(e.target)) {
+        navMenu.classList.remove("navmenu-active");
+        body.classList.remove("nav-open");
+        navToggle.classList.add("bi-list");
+        navToggle.classList.remove("bi-x");
       }
     }
   });
 
-    // Example: simulate cart update after 2s
-    // setTimeout(() => updateCartCount(3), 2000);
+  // Optional: close menu when clicking a link inside
+  navMenu.querySelectorAll("a").forEach(link => {
+    link.addEventListener("click", () => {
+      if (body.classList.contains("nav-open")) {
+        navMenu.classList.remove("navmenu-active");
+        body.classList.remove("nav-open");
+        navToggle.classList.add("bi-list");
+        navToggle.classList.remove("bi-x");
+      }
+    });
+  });
+});
+
   </script>
 
   {% block extra_js %}{% endblock %}

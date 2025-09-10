@@ -24,6 +24,7 @@ def validate_banner_image(image):
 class Category(models.Model):
     name = models.CharField(max_length=255, unique=True)
     slug = models.SlugField(unique=True)
+    image = models.ImageField(upload_to="category_images/", blank=True, null=True)
 
     class Meta:
         verbose_name_plural = "Categories"
@@ -85,6 +86,10 @@ class Product(models.Model):
         blank=True
     )
     colors = models.ManyToManyField(Color, blank=True, related_name="products")  # ✅ added
+    brand = models.CharField(max_length=100, null=True, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
 
 
     def __str__(self):
@@ -250,3 +255,15 @@ class Banner(models.Model):
             buffer.seek(0)
             self.image.save(self.image.name, ContentFile(buffer.read()), save=False)
         super().save(*args, **kwargs)
+
+class MegaMenu(models.Model):
+    title = models.CharField(max_length=100)
+    category = models.ForeignKey("Category", on_delete=models.CASCADE, related_name="megamenu")
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        verbose_name = "Mega Menu"
+        verbose_name_plural = "Mega Menus"
+
+    def __str__(self):
+        return f"{self.title} ({self.category.name})"
