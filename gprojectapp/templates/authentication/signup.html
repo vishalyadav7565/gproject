@@ -1,62 +1,135 @@
 {% extends "authentication/baseauth.html" %}
-{% block title %}Sign Up - aambika{% endblock title %}
 {% load static %}
-{% block content %}
+{% block title %}Sign Up - aambika{% endblock title %}
+
+{% block body %}
+
+<style>
+  .glass-box {
+    background: rgba(142, 111, 111, 0.6);
+    backdrop-filter: blur(14px);
+    border-radius: 18px;
+    padding: 35px 30px;
+    width: 380px;
+    margin: 80px auto;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.45);
+  }
+
+  .glass-box h3 {
+    font-weight: 600;
+    color: #fff;
+    text-align: center;
+    margin-bottom: 8px;
+  }
+
+  .glass-box p {
+    color: #cfcfcf;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .glass-box input {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #fff;
+  }
+
+  .glass-box input:focus {
+    background: rgba(255,255,255,0.15);
+    border-color: #0dcaf0;
+    color: #fff;
+    box-shadow: none;
+  }
+
+  .auth-link {
+    color: #0dcaf0;
+    text-decoration: none;
+  }
+  .auth-link:hover {
+    text-decoration: underline;
+  }
+
+  .btn-modern {
+    background: linear-gradient(135deg, #0d6efd, #3b9fff);
+    border: none;
+    padding: 10px;
+    border-radius: 8px;
+    transition: 0.2s;
+  }
+  .btn-modern:hover {
+    opacity: 0.9;
+  }
+</style>
+
 <div class="container" data-aos="fade-up">
   <div class="row justify-content-center">
-    <div class="bg-dark text-light p-4 rounded shadow"
-         style="width: 350px; height: auto; max-height: 550px; margin: 50px auto;">
 
-      <h4 class="text-center mb-3">Sign Up</h4>
-       {% if messages %}
-    {% for message in messages %}
-        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+    <div class="glass-box">
+
+      <h3>Create Account</h3>
+      <p>Join us and explore the best services</p>
+
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
             {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    {% endfor %}
-{% endif %}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+
       <form method="post" action="{% url 'signup' %}">
         {% csrf_token %}
 
         <div class="mb-2">
-          <label class="form-label">Username</label>
+          <label class="form-label text-light">Username</label>
           <input type="text" class="form-control form-control-sm" name="username" required>
         </div>
-        <div class="mb-2">
-  <label class="form-label">First Name</label>
-  <input type="text" class="form-control form-control-sm" name="first_name" required>
-</div>
-<div class="mb-2">
-  <label class="form-label">Last Name</label>
-  <input type="text" class="form-control form-control-sm" name="last_name" required>
-</div>
+
+        <div class="row">
+          <div class="col-6 mb-2">
+            <label class="form-label text-light">First Name</label>
+            <input type="text" class="form-control form-control-sm" name="first_name" required>
+          </div>
+          <div class="col-6 mb-2">
+            <label class="form-label text-light">Last Name</label>
+            <input type="text" class="form-control form-control-sm" name="last_name" required>
+          </div>
+        </div>
 
         <div class="mb-2">
-          <label class="form-label">Email</label>
+          <label class="form-label text-light">Email</label>
           <input type="email" class="form-control form-control-sm" name="email" required>
         </div>
 
         <div class="mb-2">
-          <label class="form-label">Phone Number</label>
+          <label class="form-label text-light">Phone Number</label>
           <input type="tel" class="form-control form-control-sm" name="phone" required>
         </div>
 
         <div class="mb-2">
-          <label class="form-label">Password</label>
-          <input type="password" class="form-control form-control-sm" name="password1" required>
+          <label class="form-label text-light">Password</label>
+          <input type="password" class="form-control form-control-sm" name="password" required>
         </div>
 
         <div class="mb-2">
-          <label class="form-label">Confirm Password</label>
-          <input type="password" class="form-control form-control-sm" name="password2" required>
+          <label class="form-label text-light">Confirm Password</label>
+          <input type="password" class="form-control form-control-sm" name="confirm_password" required>
         </div>
 
-        <button type="submit" class="btn btn-primary btn-sm w-100">Sign Up</button>
-        <p class="text-center mt-2 small fs-6">Already have an account? <a href="{% url 'login' %}" class="text-info">Login</a></p>
+        <button type="submit" class="btn-modern w-100 text-white mt-3">
+          Create Account
+        </button>
+
+        <p class="text-center mt-3 small">
+          Already have an account?
+          <a href="{% url 'login' %}" class="auth-link">Login</a>
+        </p>
+
       </form>
 
     </div>
+
   </div>
 </div>
 

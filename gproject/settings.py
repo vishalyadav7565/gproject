@@ -36,7 +36,8 @@ TEMPLATES = [
 SECRET_KEY = os.environ.get("SECRET_KEY", "unsafe-secret-key")
 DEBUG = os.environ.get("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = ["*", "digitalcost.live", "www.digitalcost.live"]
+ALLOWED_HOSTS = ["*"]
+
 
 # Apps
 INSTALLED_APPS = [
@@ -80,8 +81,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "vy9919855322@gmail.com")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "cbue egcv mfwk tfuf")
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -90,6 +91,11 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
+AUTHENTICATION_BACKENDS = [
+    'authcart.backends.CaseInsensitiveModelBackend',  # custom backend
+    'django.contrib.auth.backends.ModelBackend',      # fallback default
+]
+
 
 # Internationalization
 LANGUAGE_CODE = 'en-us'

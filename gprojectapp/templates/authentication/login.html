@@ -1,35 +1,84 @@
 {% extends "authentication/baseauth.html" %}
-{% block title %}Login - aambika{% endblock title %}
 {% load static %}
-{% block content%}
-<div class="container" data-aos="fade-up">
+{% block title %}Login - aambika{% endblock title %}
+{% block body %}
+
+<style>
+  .glass-card {
+    background: rgba(194, 158, 158, 0.6);
+    backdrop-filter: blur(12px);
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+  }
+  .glass-card input {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid #444;
+    color: #fff;
+  }
+  .glass-card input:focus {
+    background: rgba(255,255,255,0.15);
+    border-color: #0d6efd;
+    color: #fff;
+    box-shadow: none;
+  }
+  .auth-link {
+    color: #0dcaf0;
+    text-decoration: none;
+  }
+  .auth-link:hover {
+    text-decoration: underline;
+  }
+</style>
+
+<div class="container mt-5" data-aos="fade-up">
   <div class="row justify-content-center">
-    <div class="bg-dark text-light p-4 rounded shadow"
-         style="width: 350px; height: auto; max-height: 550px; margin: 50px auto;">
+    <div class="col-md-4">
 
-      <h4 class="text-center mb-3">Login</h4>  
-      {% if messages %}
-    {% for message in messages %}
-        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-            {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    {% endfor %}
-{% endif %} 
-<form method="post" action="{% url 'login' %}">
-        {% csrf_token %}
+      <div class="glass-card mt-5">
 
-        <div class="mb-2">
-          <label class="form-label">Username</label>
-          <input type="text" class="form-control form-control-sm" name="username" required>
-        </div>
+        <h3 class="text-center mb-3">Welcome Back</h3>
+        <p class="text-center text-muted">Login to continue</p>
 
-        <div class="mb-2">
-          <label class="form-label">Password</label>
-          <input type="password" class="form-control form-control-sm" name="password" required>
-        </div>
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+              {{ message }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+          {% endfor %}
+        {% endif %}
 
-        <button type="submit" class="btn btn-primary btn-sm w-100">Login</button>
-        <p class="text-center mt-1 small fs-6">Don't have an account? <a href="{% url 'signup' %}" class="text-info">Sign Up</a></p>
-      </form>
-{% endblock content %}
+        <form method="post" action="{% url 'login' %}">
+          {% csrf_token %}
+
+          <div class="mb-3">
+            <label class="form-label">Email or Username</label>
+            <input type="text" class="form-control" name="username" placeholder="Enter email or username" required>
+          </div>
+
+          <div class="mb-1">
+            <label class="form-label">Password</label>
+            <input type="password" class="form-control" name="password" placeholder="Enter password" required>
+          </div>
+
+          <p class="text-end small">
+            <a href="{% url 'forgot_password' %}" class="auth-link">Forgot Password?</a>
+          </p>
+
+          <button type="submit" class="btn btn-primary w-100 mt-2">Login</button>
+
+          <p class="text-center mt-3 small">
+            Don't have an account?
+            <a href="{% url 'signup' %}" class="auth-link">Sign Up</a>
+          </p>
+
+        </form>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+{% endblock body %}

@@ -148,7 +148,7 @@
 
       <!-- Logo -->
       <a href="/" class="logo d-flex align-items-center">
-        <h1 class="sitename">Shrimati</h1>
+       <img src="{% static 'assets/img/logo.png' %}" alt="Shrimati Logo" style="height:40px; width:auto;"/>
       </a>
 
       <!-- Desktop Navigation -->
@@ -215,7 +215,7 @@
       background: #1a1a1a;
       padding: 40px 20px;
       transition: right 0.3s ease;
-      z-index: 9999;
+      z-index: 1;
     }
 
     #navmenu ul {
@@ -277,7 +277,7 @@
  
 
      <!-- ======= Hero Section ======= -->
-  <section id="hero mt-">
+  <section id="hero"  style="background: linear-gradient(90deg, #eee9e9ff, #9aaac3ff);mb-5;">
      {% block mega_menu%}{% endblock %}
      
     {% block banner %}{% endblock %}

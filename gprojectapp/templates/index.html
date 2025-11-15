@@ -10,54 +10,51 @@
     #topbar {
       position: sticky;
       top: 0;
-      z-index: 0;
-      background: #fff;
+      background: black;
     }
 
-    /* Dropdown always above banners */
-    .dropdown-menu {
-      position: absolute !important;
-      z-index: 0 !important;
-      min-width: 600px;
-      background: #fff;
-      border: none;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    }
+     Dropdown always above banners 
+    /* Mega Menu Navbar Background with Gradient */
+.custom-mega-navbar {
+  background: linear-gradient(90deg, #000000, #0d6efd) !important; 
+  /* black → blue gradient */
+}
 
-    .mega-dropdown .row {
-      width: 100%;
-    }
+.custom-mega-navbar .nav-link,
+.custom-mega-navbar .navbar-brand {
+  color: #fff !important;  /* make text white */
+  font-weight: 500;
+}
 
-    .mega-dropdown h6 {
-      font-size: 14px;
-      margin-bottom: 8px;
-      color: #333;
-    }
+.custom-mega-navbar .nav-link:hover {
+  color: #ffcc00 !important; /* gold hover for contrast */
+}
 
-    .dropdown-item {
-      font-size: 13px;
-      padding: 4px 0;
-      color: #555;
-    }
+/* Dropdown background with gradient */
+.dropdown-menu {
+  background: linear-gradient(180deg, #000000, #bf9f9fff) !important; 
+  z-index: 1050 !important;
+  border: none;
+}
 
-    .dropdown-item:hover {
-      color: #0d6efd;
-      background: transparent;
-    }
+.dropdown-menu .dropdown-item {
+  color: #fff !important;
+}
 
-    .hero-container,
-    .carousel {
-      position: relative;
-      z-index: 1;
+.dropdown-menu .dropdown-item:hover {
+  color: #0d6efd !important;
+  background: transparent !important;
+
+
     }
   </style>
   {% endblock %} 
 
 
 <<!-- Mega Menu Content -->
-<section id="topbar" class="topbar d-flex align-items-center mt-10">
+<section id="topbar" class="topbar d-flex align-items-center mt-10 ">
   {% block mega_menu %}
-  <nav class="navbar navbar-expand-lg navbar-light bg-white w-100 shadow-sm mt-5">
+  <nav class="navbar navbar-expand-lg w-100 shadow-sm mt-5 custom-mega-navbar">
     <div class="container-fluid">
 
       <!-- Category Cards (Dynamic) -->

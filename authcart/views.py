@@ -12,23 +12,41 @@ from django.conf import settings
 from django.urls import reverse
 
 # ---------------- LOGIN ----------------
+from django.contrib.auth import authenticate, login
+from django.contrib import messages
+from django.contrib.auth.models import User
+
 def login_view(request):
     if request.method == "POST":
-        username = request.POST.get("username")
-        password = request.POST.get("password")
+        username_or_email = request.POST.get("username").strip()
+        password = request.POST.get("password").strip()
+
+        # Allow login using email
+        if "@" in username_or_email:
+            try:
+                user_obj = User.objects.get(email=username_or_email)
+                username = user_obj.username
+            except User.DoesNotExist:
+                messages.error(request, "No user found with this email.")
+                return render(request, "authentication/login.html")
+        else:
+            username = username_or_email
 
         user = authenticate(request, username=username, password=password)
 
         if user is not None:
-            if user.is_active:  # check activation
+            if user.is_active:
                 login(request, user)
-                return redirect('/')  
+                return redirect("/")
             else:
-                messages.error(request, "Your account is not activated. Please check your email.")
+                messages.warning(request, "Please verify your email before login.")
         else:
             messages.error(request, "Invalid username or password")
 
     return render(request, "authentication/login.html")
+
+
+
 
 
 # ---------------- SIGNUP ----------------
@@ -40,6 +58,10 @@ def signup_view(request):
         email = request.POST.get("email")
         password = request.POST.get("password")
         confirm_password = request.POST.get("confirm_password")
+
+        if not email or "@" not in email:
+            messages.error(request, "Please enter a valid email address.")
+            return render(request, "authentication/signup.html")
 
         if password != confirm_password:
             messages.error(request, "Passwords do not match.")
@@ -53,28 +75,37 @@ def signup_view(request):
             messages.error(request, "Email already registered.")
             return render(request, "authentication/signup.html")
 
-        user = User.objects.create_user(username=username, email=email, password=password, first_name=first_name, last_name=last_name)
-        user.is_active = False  # Deactivate account till it is confirmed
+        # Create inactive user
+        user = User.objects.create_user(
+            username=username,
+            email=email,
+            password=password,
+            first_name=first_name,
+            last_name=last_name
+        )
+        user.is_active = False
         user.save()
 
-        # Send activation email
+        # Send activation mail
         uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
         token = default_token_generator.make_token(user)
+
         activation_link = request.build_absolute_uri(
             reverse('activate', kwargs={'uidb64': uidb64, 'token': token})
         )
 
-        subject = "Activate your account"
-        message = f"Hi {user.username},\n\nPlease click the link below to activate your account:\n{activation_link}\n\nThank you!"
-        from_email = settings.EMAIL_HOST_USER
-        recipient_list = [email]
+        send_mail(
+            "Activate your account",
+            f"Hi {username}, click to activate: {activation_link}",
+            settings.EMAIL_HOST_USER,
+            [email]
+        )
 
-        send_mail(subject, message, from_email, recipient_list)
-
-        messages.success(request, "Account created successfully! Please check your email to activate your account.")
+        messages.success(request, "Account created! Check your email to activate.")
         return redirect("login")
 
     return render(request, "authentication/signup.html")
+
 
 
 # ---------------- LOGOUT ----------------
@@ -101,3 +132,62 @@ class ActivateAccount(View):
         else:
             messages.error(request, "Activation link is invalid or expired.")
             return redirect("signup")
+
+# ---------------- PASSWORD RESET EMAIL ----------------
+def forgot_password(request):
+    if request.method == "POST":
+        email = request.POST.get("email")
+
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            messages.error(request, "No account found with this email.")
+            return render(request, "authentication/forgot_password.html")
+
+        uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
+        token = default_token_generator.make_token(user)
+
+        reset_link = request.build_absolute_uri(
+            reverse('reset_password', kwargs={'uidb64': uidb64, 'token': token})
+        )
+
+        send_mail(
+            "Reset Your Password",
+            f"Hi {user.username}, click to reset your password: {reset_link}",
+            settings.EMAIL_HOST_USER,
+            [email],
+        )
+
+        messages.success(request, "Password reset link sent! Check your email.")
+        return redirect("login")
+
+    return render(request, "authentication/forgot_password.html")
+
+# ---------------- PASSWORD RESET CONFIRM ----------------
+def reset_password(request, uidb64, token):
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except:
+        user = None
+
+    if user is not None and default_token_generator.check_token(user, token):
+
+        if request.method == "POST":
+            password = request.POST.get("password1")
+            confirm_password = request.POST.get("password2")
+
+            if password != confirm_password:
+                messages.error(request, "Passwords do not match.")
+                return render(request, "authentication/reset_password.html")
+
+            user.set_password(password)
+            user.save()
+            messages.success(request, "Password updated successfully. You can now log in.")
+            return redirect("login")
+
+        return render(request, "authentication/reset_password.html")
+
+    else:
+        messages.error(request, "Invalid or expired link.")
+        return redirect("forgot_password")

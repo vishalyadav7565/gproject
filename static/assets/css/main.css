@@ -153,7 +153,7 @@ h6 {
   background-color: var(--background-color);
   padding: 20px 0;
   transition: all 0.5s;
-  z-index: 997;
+  z-index: 2000;
   
 }
 
@@ -850,12 +850,13 @@ section,
 /* ============================= */
 #topbar {
   position: relative;
-  z-index: 1100; /* always above hero */
+  z-index: 0; /* always above hero */
+  background: black;
 }
 
 .navbar {
   position: relative;
-  z-index: 1101;
+  z-index: 0;
 }
 
 /* Category cards */
@@ -870,10 +871,9 @@ section,
 /* Dropdowns */
 .dropdown-container {
   position: relative;
-  z-index: 1200;
 }
 .dropdown-content {
-  background: #fff;
+  background: var(--surface-color);
   border-radius: 10px;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
   padding: 20px;
