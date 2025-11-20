@@ -1,416 +1,584 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
   <title>{% block title %}Shrimati{% endblock title %}</title>
-  <meta name="description" content="">
-  <meta name="keywords" content="">
 
   <!-- Favicons -->
   <link href="{% static 'assets/img/favicon.png' %}" rel="icon">
-  <link href="{% static 'assets/img/apple-touch-icon.png' %}" rel="apple-touch-icon">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com" rel="preconnect">
   <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&family=Poppins:wght@100;200;300;400;500;600;700;800;900&family=Nunito:wght@200;300;400;500;600;700;800;900&display=swap"
-    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 
-  <!-- Vendor CSS Files -->
+  <!-- Vendor CSS -->
   <link href="{% static 'assets/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
   <link href="{% static 'assets/vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
   <link href="{% static 'assets/vendor/aos/aos.css' %}" rel="stylesheet">
   <link href="{% static 'assets/vendor/glightbox/css/glightbox.min.css' %}" rel="stylesheet">
   <link href="{% static 'assets/vendor/swiper/swiper-bundle.min.css' %}" rel="stylesheet">
 
-  <!-- Main CSS File -->
+  <!-- Main CSS -->
   <link href="{% static 'assets/css/main.css' %}" rel="stylesheet">
 
-  <!-- Extra Page Specific CSS -->
   {% block extra_css %}{% endblock %}
-  
-  <style>
-    /* --- Mobile Nav Drawer --- */
-    #navmenu {
-      position: fixed;
-      top: 0;
-      right: -100%;
-      width: 75%;
-      height: 100%;
-      background: #1a1a1a;
-      padding: 40px 20px;
-      transition: right 0.3s ease;
-      z-index: 999;
-    }
 
-    #navmenu ul {
-      flex-direction: column;
-      gap: 20px;
-      list-style: none;
-      padding-left: 0;
-    }
-
-    #navmenu.navmenu-active {
-      right: 0;
-    }
-
-    /* Overlay effect */
-    body.nav-open::before {
-      content: "";
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.6);
-      z-index: 998;
-    }
-
-    /* Cart bounce animation */
-    @keyframes cart-bounce {
-      0%   { transform: scale(1); }
-      30%  { transform: scale(1.3); }
-      60%  { transform: scale(0.9); }
-      100% { transform: scale(1); }
-    }
-
-    .cart-badge.animate {
-      animation: cart-bounce 0.4s ease;
-    }
-
-    /* Desktop override */
-    @media (min-width: 1200px) {
-      #navmenu {
-        position: static;
-        height: auto;
-        width: auto;
-        background: transparent;
-        padding: 0;
-        display: block !important;
-      }
-
-      #navmenu ul {
-        flex-direction: row;
-        gap: 15px;
-      }
-
-      .mobile-nav-toggle {
-        display: none;
-      }
-    }
-    /* --- Desktop Search Bar --- */
-.search-form {
-  flex: 1;
-  max-width: 350px;
+<style>
+  /* Scroll Top Button */
+#scroll-top {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  background: #0d6efd;
+  color: white;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 28px;
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transition: 0.3s ease-in-out;
+  z-index: 9999;
 }
 
-.search-input {
-  border-radius: 20px;
-  padding-left: 15px;
+#scroll-top.show {
+  opacity: 1;
+  visibility: visible;
 }
 
-.search-form .btn,
-.mobile-search .btn {
-  border-radius: 20px;
+
+/* ------------------------------------------------------
+   HEADER — Dark Blue + White Text
+------------------------------------------------------ */
+#header {
+  background: #0a2342 !important;
+  color: white !important;
+  padding: 15px 0;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  z-index: 9999;
 }
 
-/* --- Mobile Search Bar --- */
-.mobile-search {
-  display: none;
+.header-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-@media (max-width: 768px) {
-  .mobile-search {
-    display: block;
+.header-logo img {
+  height: 40px;
+  width: auto;
+}
+
+.header-logo h1 {
+  color: white !important;
+  font-weight: 700;
+  margin: 0;
+}
+
+.mobile-nav-toggle {
+  color: white !important;
+}
+
+/* Cart icon */
+#header .bi-cart {
+  color: white !important;
+}
+
+#cart-count {
+  color: white;
+  font-weight: bold;
+}
+
+/* ------------------------------------------------------
+   MOBILE NAV DRAWER
+------------------------------------------------------ */
+#navmenu {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: 75%;
+  height: 100%;
+  background: #111;
+  padding: 40px 20px;
+  transition: right .3s ease;
+  z-index: 999;
+}
+
+#navmenu ul {
+  flex-direction: column;
+  gap: 20px;
+  list-style: none;
+  padding: 0;
+}
+
+#navmenu.navmenu-active { right: 0; }
+
+body.nav-open::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.6);
+  z-index: 998;
+}
+
+/* Desktop Navigation */
+@media (min-width: 1200px) {
+  #navmenu {
+    position: static;
+    width: auto;
+    height: auto;
+    padding: 0;
+    background: transparent;
   }
-  .category-card {
-  transition: transform 0.2s ease;
-}
-.category-card:hover {
-  transform: translateY(-5px);
-}
+  #navmenu ul {
+    flex-direction: row;
+    gap: 15px;
+  }
+  .mobile-nav-toggle { display: none; }
 }
 
+/* ------------------------------------------------------
+   MOBILE SIDEBAR MENU
+------------------------------------------------------ */
+.side-menu {
+  position: fixed;
+  left: -280px;
+  top: 0;
+  width: 280px;
+  height: 100%;
+  background: #ffffff;
+  box-shadow: 0 0 20px rgba(0,0,0,0.2);
+  z-index: 10000;
+  padding: 20px;
+  transition: 0.3s ease;
+}
 
-  </style>
+.side-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+}
+
+.close-btn {
+  cursor: pointer;
+  font-size: 24px;
+}
+
+.side-links {
+  list-style: none;
+  margin-top: 20px;
+  padding: 0;
+}
+
+.side-links li {
+  padding: 13px 0;
+  font-size: 18px;
+  border-bottom: 1px solid #f1f1f1;
+}
+
+.dropdown-box { display: none; margin-left: 10px; }
+.dropdown-toggle { cursor: pointer; font-weight: 500; }
+
+.overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+  display: none;
+  z-index: 9998;
+}
+
+/* ------------------------------------------------------
+   MOBILE SEARCH
+------------------------------------------------------ */
+.mobile-search { display: none; }
+@media (max-width: 768px) { .mobile-search { display: block; } }
+
+.search-input { border-radius: 20px; padding-left: 15px; }
+
+</style>
+
 </head>
 
 <body class="index-page">
 
-  <!-- ======= Header ======= -->
-  <header id="header" class="header d-flex align-items-center fixed-top" style="background-color: #1a1a1a;">
-    <div class="container-fluid container-xl position-relative d-flex align-items-center justify-content-between">
-
-      <!-- Logo -->
-      <a href="/" class="logo d-flex align-items-center">
-       <img src="{% static 'assets/img/logo.png' %}" alt="Shrimati Logo" style="height:40px; width:auto;"/>
-      </a>
-
-      <!-- Desktop Navigation -->
-      <nav id="navmenu" class="navmenu">
-        <ul class="d-flex align-items-center mb-0">
-          <li><a href="/" class="active">Home</a></li>
-          <li><a href="/about/">About</a></li>
-          <li><a href="/orders/">Orders</a></li>
-          <li><a href="/portfolio/">Product</a></li>
-          <li><a href="/blog/">Blog</a></li>
-
-          <!-- Dropdown -->
-          <li class="dropdown">
-            <a href="#"><span>Sign In</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
-            <ul>
-              <li><a href="{% url 'signup' %}">Sign Up</a></li>
-              <li><a href="{% url 'login' %}">Login</a></li>
-              <li><a href="{% url 'logout' %}">Logout</a></li>
-            </ul>
-          </li>
-
-          <!-- Contact -->
-          <li><a href="/contact/">Contact</a></li>
-          <!-- Profile -->
-          <li>
-            <a href="/profile/">
-              <i class="bi bi-person-circle"></i><span class="ms-2">{{ user.username }}</span>
-            </a>
-          </li>
-        </ul>
-      </nav>
-
-      <!-- Right Side (Cart + Mobile Toggle) -->
-      <div class="d-flex align-items-center">
-         <!-- Desktop Search Bar -->
-  <form action="{% url 'search' %}" method="get" class="d-none d-md-flex me-3 search-form">
-    <input type="text" name="q" class="form-control form-control-sm search-input"
-           placeholder="Search for products..." value="{{ request.GET.q|default:'' }}">
-    <button class="btn btn-danger btn-sm ms-2" type="submit">
-      <i class="bi bi-search"></i>
-    </button>
-  </form>
-        <!-- Cart -->
-        <a href="{% url 'checkout' %}" class="position-relative me-3">
-          <i class="bi bi-cart text-white" style="font-size: 1.6rem;"></i>
-          <span id="cart-count"
-                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-badge">
-            {{ cart_count|default:"0" }}
-          </span>
+<!-- -----------------------------------------------------
+     HEADER
+------------------------------------------------------ -->
+<header id="header" class="header d-flex align-items-center fixed-top">
+  <div class="container-fluid container-xl d-flex align-items-center justify-content-between">
+  <nav id="navmenu" class="d-flex align-items-center">
+  {% if user.is_authenticated %}
+    <div class="d-flex align-items-center me-3">
+      <div class="dropdown">
+        <a class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" href="#" id="navProfile" data-bs-toggle="dropdown" aria-expanded="false">
+          {% if user.profile.profile_picture %}
+            <img src="{{ user.profile.profile_picture.url }}" alt="Avatar" class="rounded-circle" style="width:36px;height:36px;object-fit:cover;margin-right:8px;">
+          {% else %}
+          <i class="bi bi-person-circle text-white" style="font-size:36px;margin-right:8px;"></i>
+            <img src="{% static 'assets/img/default-avatar.png' %}" alt="Avatar" class="rounded-circle" style="width:36px;height:36px;object-fit:cover;margin-right:8px;">
+          {% endif %}
+          <span class="d-none d-xl-inline">{{ user.get_full_name|default:user.username }}</span>
         </a>
-        <!-- Mobile Nav Toggle -->
-        <i class="mobile-nav-toggle d-xl-none bi bi-list text-white" style="font-size:1.8rem;"></i>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navProfile">
+          <li><a class="dropdown-item" href="{% url 'profile' %}">My Profile</a></li>
+          <li><a class="dropdown-item" href="{% url 'orders' %}">Orders</a></li>
+          <li><a class="dropdown-item" href="{% url 'checkout' %}">Checkout</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+        </ul>
+      </div>
+    </div>
+  {% else %}
+    <div class="d-flex align-items-center me-3">
+      <a class="btn btn-outline-light btn-sm me-2 d-none d-xl-inline" href="{% url 'login' %}">Login</a>
+      <a class="btn btn-light btn-sm d-none d-xl-inline" href="{% url 'signup' %}">Sign Up</a>
+      <a class="nav-link d-xl-none text-white" href="{% url 'login' %}" title="Account"><i class="bi bi-person" style="font-size:1.25rem;"></i></a>
+    </div>
+  {% endif %}
+    <ul class="d-flex align-items-center mb-0">
+      <li><a class="nav-link" href="/">Home</a></li>
+      <li><a class="nav-link" href="/about/">About</a></li>
+      <li><a class="nav-link" href="/orders/">Orders</a></li>
+      <li><a class="nav-link" href="/blog/">Blog</a></li>
+      <li><a class="nav-link" href="/contact/">Contact</a></li>
+
+      <li class="dropdown d-none d-xl-block ms-2">
+        <a class="nav-link dropdown-toggle" href="#" id="accountDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+          Account
+        </a>
+        <ul class="dropdown-menu" aria-labelledby="accountDropdown">
+          <li><a class="dropdown-item" href="{% url 'signup' %}">Sign Up</a></li>
+          <li><a class="dropdown-item" href="{% url 'login' %}">Login</a></li>
+          <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+        </ul>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Desktop search (visible md and up) -->
+  <form action="{% url 'search' %}" method="get" class="d-none d-md-flex align-items-center ms-3" style="width:420px;">
+    <div class="input-group w-100">
+      <input type="text" name="q" class="form-control search-input" placeholder="Search products..." value="{{ request.GET.q|default:'' }}">
+      <button class="btn btn-danger" type="submit"><i class="bi bi-search"></i></button>
+    </div>
+  </form>
+    <!-- LEFT: LOGO IMAGE + TEXT -->
+    <a href="/" class="header-logo">
+      <h1>SHRIMATI</h1>
+    </a>
+
+    <!-- MOBILE MENU ICON -->
+    <i class="bi bi-list mobile-nav-toggle d-xl-none" style="font-size: 30px;" onclick="openSidebar()"></i>
+
+    <!-- RIGHT: CART -->
+    <a href="{% url 'checkout' %}" class="navlink bg-danger text-white p-3 rounded position-relative">
+      <i class="bi bi-cart" style="font-size: 1.6rem;"></i>
+      <span id="cart-count">{{ cart_count|default:"0" }}</span>
+    </a>
+ <!-- 🚗 PathRider Loading Screen -->
+<div id="start-loader">
+    <div class="loader-box">
+        <div class="road"></div>
+        <div class="car"></div>
+        <p>Starting PathRider…</p>
+    </div>
+</div>
+
+<style>
+    /* Fullscreen Layer */
+    #start-loader {
+        position: fixed;
+        inset: 0;
+        background: #481e1eff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 999999;
+        transition: opacity .6s ease;
+    }
+
+    .loader-box {
+        position: relative;
+        text-align: center;
+    }
+
+    /* Road */
+    .road {
+        width: 180px;
+        height: 6px;
+        background: #cccccc;
+        border-radius: 3px;
+        margin: 0 auto;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .road::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: repeating-linear-gradient(
+            to right,
+            #ffffff 0 20px,
+            #000000 20px 40px
+        );
+        animation: moveRoad 1s linear infinite;
+    }
+
+    /* Car Body */
+    .car {
+        width: 60px;
+        height: 30px;
+        background: #1b73e8;
+        border-radius: 5px;
+        position: absolute;
+        top: -35px;
+        left: 0;
+        animation: drive 1.5s infinite ease-in-out;
+    }
+
+    /* Wheels */
+    .car::before,
+    .car::after {
+        content: "";
+        position: absolute;
+        width: 14px;
+        height: 14px;
+        background: #000;
+        border-radius: 50%;
+        bottom: -8px;
+        animation: wheel 0.4s linear infinite;
+    }
+
+    .car::before { left: 5px; }
+    .car::after  { right: 5px; }
+
+    /* Text */
+    #start-loader p {
+        margin-top: 60px;
+        font-size: 18px;
+        font-weight: 600;
+        color: #ede7e7ff;
+    }
+
+    /* Animations */
+    @keyframes moveRoad {
+        from { transform: translateX(0); }
+        to   { transform: translateX(-40px); }
+    }
+
+    @keyframes wheel {
+        from { transform: rotate(0); }
+        to   { transform: rotate(360deg); }
+    }
+
+    @keyframes drive {
+        0%   { left: 0px; }
+        50%  { left: 120px; }
+        100% { left: 0px; }
+    }
+</style>
+
+<script>
+    // Force loader to stay 5 seconds
+    window.addEventListener("load", function () {
+        setTimeout(() => {
+            const loader = document.getElementById("start-loader");
+            loader.style.opacity = "0";
+            setTimeout(() => loader.style.display = "none", 500);
+        }, 3000); 
+    });
+</script>
+
+
+
+  </div>
+</header>
+
+<!-- -----------------------------------------------------
+  MOBILE SIDEBAR MENU
+------------------------------------------------------ -->
+<div id="sideMenu" class="side-menu">
+  <div class="side-header">
+    <h2 class="mb-0">Menu</h2>
+    <i class="bi bi-x-lg close-btn" onclick="closeSidebar()"></i>
+  </div>
+
+  <!-- Mobile search inside sidebar (visible on small screens) -->
+  <div class="mobile-search d-md-none w-100 mb-3">
+    <form action="{% url 'search' %}" method="get" class="d-flex">
+   <input type="text" name="q" class="form-control search-input" placeholder="Search products..." value="{{ request.GET.q|default:'' }}" aria-label="Search products">
+   <button class="btn btn-danger ms-2" type="submit"><i class="bi bi-search"></i></button>
+    </form>
+  </div>
+
+  <ul class="side-links">
+    <li><a href="/">Home</a></li>
+    <li><a href="/about/">About</a></li>
+    <li><a href="/orders/">Orders</a></li>
+    <li><a href="/profile/">My Profile</a></li>
+    <li><a href="/blog/">Blog</a></li>
+
+    <li class="dropdown-toggle" onclick="toggleDrop('loginDrop')">
+   Sign In <i class="bi bi-chevron-down float-end"></i>
+    </li>
+
+    <ul id="loginDrop" class="dropdown-box">
+   <li><a href="{% url 'signup' %}">Sign Up</a></li>
+   <li><a href="{% url 'login' %}">Login</a></li>
+   <li><a href="{% url 'logout' %}">Logout</a></li>
+    </ul>
+
+    <li><a href="/contact/">Contact</a></li>
+  </ul>
+  <!--user-profile-->
+  <div class="user-profile mt-4">
+    {% if user.is_authenticated %}
+      <div class="d-flex align-items-center gap-3 mb-3">
+        {% if user.profile.profile_picture %}
+          <img src="{{ user.profile.profile_picture.url }}" alt="Avatar" class="rounded-circle" style="width:64px;height:64px;object-fit:cover;">
+        {% else %}
+          <img src="{% static 'assets/img/default-avatar.png' %}" alt="Avatar" class="rounded-circle" style="width:64px;height:64px;object-fit:cover;">
+        {% endif %}
+        <div>
+          <strong>{{ user.get_full_name|default:user.username }}</strong><br>
+          <small class="text-muted">{{ user.email }}</small>
+        </div>
       </div>
 
-    </div>
-     <style>
-    /* --- Mobile Nav Drawer --- */
-    #navmenu {
-      position: fixed;
-      top: 0;
-      right: -100%;
-      width: 75%;        /* drawer width */
-      height: 100vh;
-      background: #1a1a1a;
-      padding: 40px 20px;
-      transition: right 0.3s ease;
-      z-index: 1;
-    }
+      <ul class="list-unstyled mb-0">
+        <li class="mb-2"><a class="btn btn-sm btn-outline-secondary w-100" href="{% url 'profile' %}">View Profile</a></li>
+        <li class="mb-2"><a class="btn btn-sm btn-outline-secondary w-100" href="{% url 'orders' %}">Orders</a></li>
+        <li class="mb-2"><a class="btn btn-sm btn-danger text-white w-100" href="{% url 'checkout' %}">Checkout</a></li>
+        <li><a class="btn btn-sm btn-link text-danger w-100" href="{% url 'logout' %}">Logout</a></li>
+      </ul>
+    {% else %}
+      <div class="text-center mb-3">
+        <img src="{% static 'assets/img/default-avatar.png' %}" alt="Avatar" class="rounded-circle mb-2" style="width:64px;height:64px;object-fit:cover;">
+        <p class="mb-2">Welcome, guest</p>
+        <div class="d-flex gap-2 justify-content-center">
+          <a class="btn btn-outline-primary btn-sm" href="{% url 'login' %}">Login</a>
+          <a class="btn btn-primary btn-sm" href="{% url 'signup' %}">Sign Up</a>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</div>
 
-    #navmenu ul {
-      flex-direction: column;
-      gap: 20px;
-      list-style: none;
-      padding-left: 0;
-    }
+<div id="overlay" class="overlay" onclick="closeSidebar()"></div>
 
-    #navmenu.navmenu-active {
-      right: 0;
-    }
-
-    /* Overlay */
-    body.nav-open::before {
-      content: "";
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%;
-      height: 100vh;
-      background: rgba(0,0,0,0.6);
-      z-index: 9998;
-    }
-
-    /* Desktop override */
-    @media (min-width: 1200px) {
-      #navmenu {
-        position: static;
-        height: auto;
-        width: auto;
-        background: transparent;
-        padding: 0;
-        display: block !important;
-      }
-
-      #navmenu ul {
-        flex-direction: row;
-        gap: 15px;
-      }
-
-      .mobile-nav-toggle {
-        display: none;
-      }
-    }
-  </style>
-  </header>
-
-  <!-- ✅ Mobile Search Bar -->
+<!-- -----------------------------------------------------
+  MOBILE SEARCH BAR (kept for header-level mobile search)
+------------------------------------------------------ -->
 <div class="mobile-search d-md-none p-2 bg-light">
   <form action="{% url 'search' %}" method="get" class="d-flex">
-    <input type="text" name="q" class="form-control search-input"
-           placeholder="Search products..." value="{{ request.GET.q|default:'' }}">
-    <button class="btn btn-danger ms-2" type="submit">
-      <i class="bi bi-search"></i>
-    </button>
+    <input type="text" name="q" class="form-control search-input" placeholder="Search products..." value="{{ request.GET.q|default:'' }}">
+    <button class="btn btn-danger ms-2" type="submit"><i class="bi bi-search"></i></button>
   </form>
-
 </div>
- 
 
-     <!-- ======= Hero Section ======= -->
-  <section id="hero"  style="background: linear-gradient(90deg, #eee9e9ff, #9aaac3ff);mb-5;">
-     {% block mega_menu%}{% endblock %}
-     
-    {% block banner %}{% endblock %}
-  </section>
+<!-- -----------------------------------------------------
+     HERO AREA (Mega Menu + Banner Blocks)
+------------------------------------------------------ -->
+<section id="hero" style="background: #eef1f4;">
+  {% block mega_menu %}{% endblock %}
+  {% block banner %}{% endblock %}
+</section>
 
-  <!-- ======= Main Section ======= -->
-  <main id="main">
-    {% block body %}{% endblock body %}
-  </main>
+<!-- -----------------------------------------------------
+     MAIN CONTENT
+------------------------------------------------------ -->
+<main id="main">
+  {% block body %}{% endblock %}
+</main>
 
-  <!-- Checkout Section -->
-  <section id="checkout" class="checkout section" data-aos="fade-up">
-    {% block checkout %}{% endblock checkout %}
-  </section>
+<!-- -----------------------------------------------------
+     FOOTER
+------------------------------------------------------ -->
+<footer id="footer" class="footer dark-background">
+  <div class="container footer-top">
+    <div class="row gy-4">
 
-  <!-- ======= Footer ======= -->
-  <footer id="footer" class="footer dark-background">
-    <div class="container footer-top">
-      <div class="row gy-4">
-        
-        <!-- About -->
-        <div class="col-lg-5 col-md-12 footer-about">
-          <a href="{% url 'index' %}" class="logo d-flex align-items-center">
-            <span class="sitename">Shrimati</span>
-          </a>
-          <p>We provide 100% pure, natural and chemical-free jaggery products directly sourced from farmers. Healthy sweetness for a healthier life.</p>
-          <div class="social-links d-flex mt-4">
-            <a href="https://twitter.com/"><i class="bi bi-twitter-x"></i></a>
-            <a href="https://facebook.com/"><i class="bi bi-facebook"></i></a>
-            <a href="https://instagram.com/"><i class="bi bi-instagram"></i></a>
-            <a href="https://linkedin.com/"><i class="bi bi-linkedin"></i></a>
-          </div>
-        </div>
-
-        <!-- Useful Links -->
-        <div class="col-lg-2 col-6 footer-links">
-          <h4>Useful Links</h4>
-          <ul>
-            <li><a href="{% url 'index' %}">Home</a></li>
-            <li><a href="{% url 'about' %}">About Us</a></li>
-            <li><a href="{% url 'contact' %}">Contact</a></li>
-            <li><a href="#">Terms of Service</a></li>
-            <li><a href="#">Privacy Policy</a></li>
-          </ul>
-        </div>
-
-        <!-- Contact -->
-        <div class="col-lg-3 col-md-12 footer-contact text-center text-md-start">
-          <h4>Contact Us</h4>
-          <p>Village & Post - XYZ</p>
-          <p>Noida, Uttar Pradesh - 201301</p>
-          <p>India</p>
-          <p class="mt-4"><strong>Phone:</strong> <span>+91 9876543210</span></p>
-          <p><strong>Email:</strong> <span>support@shrimati.com</span></p>
-        </div>
-
+      <div class="col-lg-5 col-md-12 footer-about">
+        <a href="/" class="logo d-flex align-items-center">
+          <span class="sitename">Shrimati</span>
+        </a>
+        <p>Pure, natural jaggery products directly from farmers.</p>
       </div>
-    </div>
 
-    <div class="container copyright text-center mt-4">
-      <p>© <span>Copyright</span> <strong class="px-1 sitename">Shrimati</strong> <span>All Rights Reserved</span></p>
-      <div class="credits">
-        Developed by <a href="https://vishalyadav7565.netlify.app/">Vishal Yadav</a>
+      <div class="col-lg-2 col-6 footer-links">
+        <h4>Useful Links</h4>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about/">About</a></li>
+          <li><a href="/contact/">Contact</a></li>
+        </ul>
       </div>
+
+      <div class="col-lg-3 col-md-12 footer-contact">
+        <h4>Contact</h4>
+        <p>Noida, Uttar Pradesh</p>
+        <p><strong>Phone:</strong> +91 9876543210</p>
+      </div>
+
     </div>
-  </footer>
-  <!-- End Footer -->
+  </div>
+</footer>
 
-  <!-- Scroll Top -->
-  <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center">
-    <i class="bi bi-arrow-up-short"></i>
-  </a>
+<!-- Scroll Top -->
+<a href="#" id="scroll-top" class="scroll-top">
+  <i class="bi bi-arrow-up-short"></i>
+</a>
 
-  <!-- Preloader -->
-  <div id="preloader"></div>
+<!-- Preloader -->
+<div id="preloader"></div>
 
-  <!-- Vendor JS Files -->
-  <script src="{% static 'assets/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
-  <script src="{% static 'assets/vendor/php-email-form/validate.js' %}"></script>
-  <script src="{% static 'assets/vendor/aos/aos.js' %}"></script>
-  <script src="{% static 'assets/vendor/glightbox/js/glightbox.min.js' %}"></script>
-  <script src="{% static 'assets/vendor/imagesloaded/imagesloaded.pkgd.min.js' %}"></script>
-  <script src="{% static 'assets/vendor/isotope-layout/isotope.pkgd.min.js' %}"></script>
-  <script src="{% static 'assets/vendor/swiper/swiper-bundle.min.js' %}"></script>
+<!-- JS -->
+<script src="{% static 'assets/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'assets/vendor/aos/aos.js' %}"></script>
+<script src="{% static 'assets/vendor/glightbox/js/glightbox.min.js' %}"></script>
+<script src="{% static 'assets/vendor/swiper/swiper-bundle.min.js' %}"></script>
+<script src="{% static 'assets/js/main.js' %}"></script>
 
-  <!-- Main JS File -->
-  <script src="{% static 'assets/js/main.js' %}"></script>
+{% block extra_js %}{% endblock %}
 
-  <!-- Mobile Nav Toggle & Cart Animation -->
- <!-- Mobile Nav JS -->
-  <script>
-  document.addEventListener("DOMContentLoaded", function () {
-  const navToggle = document.querySelector(".mobile-nav-toggle");
-  const navMenu = document.querySelector("#navmenu");
-  const body = document.body;
-
-  // Toggle menu on button click
-  navToggle.addEventListener("click", function (e) {
-    e.stopPropagation(); // prevent click from bubbling
-    navMenu.classList.toggle("navmenu-active");
-    body.classList.toggle("nav-open");
-    this.classList.toggle("bi-list");
-    this.classList.toggle("bi-x");
-  });
-
-  // Close menu when clicking outside
-  document.addEventListener("click", function (e) {
-    if (body.classList.contains("nav-open")) {
-      if (!navMenu.contains(e.target) && !navToggle.contains(e.target)) {
-        navMenu.classList.remove("navmenu-active");
-        body.classList.remove("nav-open");
-        navToggle.classList.add("bi-list");
-        navToggle.classList.remove("bi-x");
-      }
-    }
-  });
-
-  // Optional: close menu when clicking a link inside
-  navMenu.querySelectorAll("a").forEach(link => {
-    link.addEventListener("click", () => {
-      if (body.classList.contains("nav-open")) {
-        navMenu.classList.remove("navmenu-active");
-        body.classList.remove("nav-open");
-        navToggle.classList.add("bi-list");
-        navToggle.classList.remove("bi-x");
-      }
-    });
-  });
-});
-
-  </script>
-
-  {% block extra_js %}{% endblock %}
+<script>
+/* Sidebar Control */
+function openSidebar() {
+  document.getElementById('sideMenu').style.left = "0";
+  document.getElementById('overlay').style.display = "block";
+}
+function closeSidebar() {
+  document.getElementById('sideMenu').style.left = "-280px";
+  document.getElementById('overlay').style.display = "none";
+}
+function toggleDrop(id) {
+  const box = document.getElementById(id);
+  box.style.display = box.style.display === "block" ? "none" : "block";
+}
+/* Scroll Top Button */
+const scrollTopBtn = document.getElementById("scroll-top");
+window.addEventListener("scroll", () => {
+  if (window.scrollY > 300) {
+    scrollTopBtn.classList.add("show");
+  } else {
+    scrollTopBtn.classList.remove("show");
+  }
+}); 
+</script>
 
 </body>
 </html>

@@ -36,7 +36,7 @@ TEMPLATES = [
 SECRET_KEY = os.environ.get("SECRET_KEY", "unsafe-secret-key")
 DEBUG = os.environ.get("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = ["gproject-production.up.railway.app"]
+ALLOWED_HOSTS = ["gproject-production.up.railway.app", "localhost", "127.0.0.1"]
 
 CSRF_TRUSTED_ORIGINS = ["https://gproject-production.up.railway.app"]
 

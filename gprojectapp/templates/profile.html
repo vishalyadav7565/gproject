@@ -18,25 +18,48 @@
         box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
     }
     .profile-header {
-        font-size: 1.5rem;
-        font-weight: bold;
         margin-bottom: 20px;
+    }
+    .profile-pic {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        border: 4px solid white;
+        object-fit: cover;
+        margin-bottom: 15px;
     }
     .profile-info {
         font-size: 1.1rem;
         margin: 10px 0;
     }
-    .profile-footer {
-        margin-top: 20px;
-    }
     .btn-custom {
         border-radius: 12px;
-        padding: 10px 20px;
+        padding: 10px 18px;
         font-weight: bold;
         transition: all 0.3s ease;
     }
     .btn-custom:hover {
         transform: scale(1.05);
+    }
+    .settings-card {
+        background: #ffffff;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+    }
+    .settings-item {
+        padding: 12px 0;
+        border-bottom: 1px solid #ddd;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .settings-item:last-child {
+        border-bottom: none;
+    }
+    .settings-item i {
+        font-size: 1.3rem;
+        margin-right: 10px;
     }
 </style>
 
@@ -44,11 +67,32 @@
     <div class="row justify-content-center">
         <div class="col-md-6">
 
-            <!-- Stylish Profile Card -->
+            <!-- PROFILE CARD -->
             <div class="profile-card text-center">
+
+                <!-- Profile Picture -->
+                {% if user.profile_image %}
+                    <img src="{{ user.profile_image.url }}" class="profile-pic" alt="Profile">
+                {% else %}
+                    <img src="{% static 'default/user.png' %}" class="profile-pic" alt="Default">
+                {% endif %}
+
+                <form 
+                    action="{% url 'upload_profile_image' %}" 
+                    method="POST" 
+                    enctype="multipart/form-data"
+                    class="mt-2">
+                    {% csrf_token %}
+                    <input type="file" name="profile_image" class="form-control mb-2" required>
+                    <button class="btn btn-light btn-custom btn-sm">
+                        <i class="bi bi-upload"></i> Upload Photo
+                    </button>
+                </form>
+
                 <div class="profile-header">
-                    <i class="bi bi-person-circle" style="font-size: 3rem;"></i>
-                    <p class="profile-info"><strong>{{ user.first_name }} {{ user.last_name }}</strong> </p>
+                    <p class="profile-info">
+                        <strong>{{ user.first_name }} {{ user.last_name }}</strong>
+                    </p>
                 </div>
 
                 <div class="profile-body">
@@ -65,6 +109,31 @@
                         <i class="bi bi-box-arrow-right"></i> Logout
                     </a>
                 </div>
+            </div>
+
+            <!-- SETTINGS SECTION -->
+            <div class="settings-card mt-4">
+
+                <div class="settings-item">
+                    <span><i class="bi bi-receipt-cutoff"></i> My Orders</span>
+                    <a href="{% url 'orders' %}" class="btn btn-sm btn-primary">Open</a>
+                </div>
+
+                <div class="settings-item">
+                    <span><i class="bi bi-arrow-repeat"></i> Refunds</span>
+                    <a href="{% url 'refunds' %}" class="btn btn-sm btn-primary">Open</a>
+                </div>
+
+                <div class="settings-item">
+                    <span><i class="bi bi-gear"></i> Account Settings</span>
+                    <a href="{% url 'edit_profile' %}" class="btn btn-sm btn-primary">Open</a>
+                </div>
+
+                <div class="settings-item">
+                    <span><i class="bi bi-key"></i> Change Password</span>
+                    <a href="{% url 'change_password' %}" class="btn btn-sm btn-primary">Open</a>
+                </div>
+
             </div>
 
         </div>
