@@ -75,7 +75,7 @@ def signup_view(request):
             messages.error(request, "Email already registered.")
             return render(request, "authentication/signup.html")
 
-        # Create inactive user
+        # ---- CREATE USER ----
         user = User.objects.create_user(
             username=username,
             email=email,
@@ -86,7 +86,15 @@ def signup_view(request):
         user.is_active = False
         user.save()
 
-        # Send activation mail
+        # ---- CREATE PROFILE ----
+        from .models import Profile
+        Profile.objects.create(
+            user=user,
+            phone="",  
+            full_name=f"{first_name} {last_name}"
+        )
+
+        # ---- SEND EMAIL ----
         uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
         token = default_token_generator.make_token(user)
 
@@ -95,10 +103,11 @@ def signup_view(request):
         )
 
         send_mail(
-            "Activate your account",
-            f"Hi {username}, click to activate: {activation_link}",
+            "Activate Your Account",
+            f"Hi {user.username}, click to activate your account: {activation_link}",
             settings.EMAIL_HOST_USER,
-            [email]
+            [email],
+            fail_silently=False,
         )
 
         messages.success(request, "Account created! Check your email to activate.")
