@@ -107,7 +107,7 @@ def signup_view(request):
             f"Hi {user.username}, click to activate your account: {activation_link}",
             settings.EMAIL_HOST_USER,
             [email],
-            fail_silently=False,
+            fail_silently=True,
         )
 
         messages.success(request, "Account created! Check your email to activate.")
