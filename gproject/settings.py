@@ -51,8 +51,16 @@ INSTALLED_APPS = [
     'gprojectapp',
     'authcart',
     'widget_tweaks',
+    'cloudinary',
+    'cloudinary_storage',
 ]
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': os.environ.get('dchz8g2tl'),
+    'API_KEY': os.environ.get('827469129861588'),
+    'API_SECRET': os.environ.get('wu5DYLEc-slzJH41gzrLw5rPaqI'),
+}
 
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 # Middleware
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

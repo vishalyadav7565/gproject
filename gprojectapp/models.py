@@ -13,9 +13,15 @@ from django.core.files.base import ContentFile
 # Banner image validator
 # -------------------------
 def validate_banner_image(image):
-    max_size_mb = 1  # Max 1MB
+    valid_mime_types = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp']
+    file_mime_type = image.file.content_type
+    if file_mime_type not in valid_mime_types:
+        raise ValidationError('Unsupported file type. Only JPEG, PNG, and WEBP are allowed.')
+
+    # Validate file size (max 2MB)
+    max_size_mb = 5
     if image.size > max_size_mb * 1024 * 1024:
-        raise ValidationError(f"Image file size should not exceed {max_size_mb} MB.")
+        raise ValidationError(f'Image file too large ( > {max_size_mb}MB )')
 
 
 # -------------------------
@@ -77,23 +83,22 @@ class Product(models.Model):
     subcategory = models.ForeignKey(SubCategory, on_delete=models.SET_NULL, null=True, blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     image = models.ImageField(upload_to="products/")
-    created_at = models.DateTimeField(auto_now_add=True)
     description = models.TextField(blank=True, null=True)
     offer = models.CharField(max_length=255, blank=True, null=True)
-    is_active = models.BooleanField(default=True)
     about = models.TextField(
         help_text="Enter each feature on a new line",
         blank=True
     )
-    colors = models.ManyToManyField(Color, blank=True, related_name="products")  # ✅ added
+    colors = models.ManyToManyField(Color, blank=True, related_name="products")
     brand = models.CharField(max_length=100, null=True, blank=True)
 
+    # KEEP ONLY ONE
     created_at = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
 
-
     def __str__(self):
         return self.name
+
 
     def average_rating(self):
         reviews = self.reviews.all()
@@ -245,16 +250,29 @@ class Banner(models.Model):
         return self.title or f"Banner {self.id}"
 
     def save(self, *args, **kwargs):
-        """Auto-resize & compress banner image"""
         if self.image:
-            img = Image.open(self.image)
-            width, height = 1200, 400
-            img = img.resize((width, height), Image.Resampling.LANCZOS)
-            buffer = BytesIO()
-            img.save(buffer, format='JPEG', quality=85)
-            buffer.seek(0)
-            self.image.save(self.image.name, ContentFile(buffer.read()), save=False)
+            try:
+                img = Image.open(self.image)
+
+                # Convert PNG/WEBP to RGB
+                if img.mode != "RGB":
+                    img = img.convert("RGB")
+
+                # Resize banner
+                img = img.resize((1200, 400), Image.Resampling.LANCZOS)
+
+                buffer = BytesIO()
+                img.save(buffer, format="JPEG", quality=85)
+                buffer.seek(0)
+
+                # Save new file
+                self.image = ContentFile(buffer.read(), name=f"banner_{self.pk or ''}.jpg")
+
+            except Exception as e:
+                print("Banner image compression failed:", e)
+
         super().save(*args, **kwargs)
+
 
 class MegaMenu(models.Model):
     title = models.CharField(max_length=100)

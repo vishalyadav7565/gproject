@@ -4,8 +4,9 @@ from django.shortcuts import redirect
 from django.urls import path, reverse
 from .models import (
     Contact, Product, Order, UserProfile, Review, Banner,
-    Category, SubCategory, Specification, Color, timezone, MegaMenu
+    Category, SubCategory, Specification, Color, MegaMenu
 )
+
 
 # -------------------------
 # Branding
