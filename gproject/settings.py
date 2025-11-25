@@ -14,26 +14,34 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # ---------------- SECURITY ----------------
 SECRET_KEY = os.environ.get("SECRET_KEY", "unsafe-secret-key")
-DEBUG = os.environ.get("DEBUG", "True") == "True"
+DEBUG = os.environ.get("DEBUG", "False") == "True"
 
-# Railway auto domain
 RAILWAY_HOST = os.environ.get("RAILWAY_PUBLIC_DOMAIN", "")
 
 ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
+    ".railway.app",
 ]
 
 if RAILWAY_HOST:
     ALLOWED_HOSTS.append(RAILWAY_HOST)
 
-# ---------------- CSRF FIX ----------------
+# ---------------- CSRF & PROXY FIX ----------------
 CSRF_TRUSTED_ORIGINS = [
-    "https://*.railway.app",
+    "https://*.railway.app"
 ]
 
 if RAILWAY_HOST:
     CSRF_TRUSTED_ORIGINS.append(f"https://{RAILWAY_HOST}")
+
+CSRF_COOKIE_SECURE = not DEBUG
+SESSION_COOKIE_SECURE = not DEBUG
+
+USE_X_FORWARDED_HOST = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+SECURE_SSL_REDIRECT = not DEBUG
 
 # ---------------- APPS ----------------
 INSTALLED_APPS = [
@@ -51,15 +59,6 @@ INSTALLED_APPS = [
     'cloudinary',
     'cloudinary_storage',
 ]
-
-# ---------------- CLOUDINARY ----------------
-CLOUDINARY_STORAGE = {
-    "CLOUD_NAME": os.environ.get("CLOUD_NAME"),
-    "API_KEY": os.environ.get("CLOUDINARY_API_KEY"),
-    "API_SECRET": os.environ.get("CLOUDINARY_API_SECRET"),
-}
-
-DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 
 # ---------------- MIDDLEWARE ----------------
 MIDDLEWARE = [
@@ -100,7 +99,7 @@ DATABASES = {
     "default": dj_database_url.config(
         default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
         conn_max_age=600,
-        ssl_require=False
+        ssl_require=True if not DEBUG else False
     )
 }
 
@@ -123,6 +122,15 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
+# ---------------- CLOUDINARY ----------------
+CLOUDINARY_STORAGE = {
+    "CLOUD_NAME": os.environ.get("CLOUD_NAME"),
+    "API_KEY": os.environ.get("CLOUDINARY_API_KEY"),
+    "API_SECRET": os.environ.get("CLOUDINARY_API_SECRET"),
+}
+
+DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
+
 # ---------------- AUTH ----------------
 LOGIN_URL = "/auth/login/"
 LOGIN_REDIRECT_URL = "/"
@@ -136,3 +144,4 @@ MESSAGE_TAGS = {
 
 # ---------------- OTHER ----------------
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+SESSION_COOKIE_AGE = 60 * 60 * 24 * 7  # 1 week in seconds
