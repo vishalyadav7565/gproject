@@ -102,18 +102,18 @@ def signup_view(request):
             reverse('activate', kwargs={'uidb64': uidb64, 'token': token})
         )
 
-        send_mail(
-            "Activate Your Account",
-            f"Hi {user.username}, click to activate your account: {activation_link}",
-            settings.EMAIL_HOST_USER,
-            [email],
-            fail_silently=True,
-        )
-
-        messages.success(request, "Account created! Check your email to activate.")
-        return redirect("login")
-
-    return render(request, "authentication/signup.html")
+        try:
+    send_mail(
+        "Activate Your Account",
+        f"Hi {user.username}, click to activate your account: {activation_link}",
+        settings.EMAIL_HOST_USER,
+        [email],
+        fail_silently=False,
+    )
+except Exception as e:
+    print("EMAIL ERROR:", e)
+    messages.error(request, "Email not sent. Please try again later.")
+    return redirect("login")
 
 
 
