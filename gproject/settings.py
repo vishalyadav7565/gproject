@@ -2,25 +2,21 @@
 Django settings for gproject project.
 """
 
+import os
 from pathlib import Path
 from django.contrib import messages
-import os
-import dj_database_url
 from dotenv import load_dotenv
+import dj_database_url
 
 load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# ---------------- MEDIA ----------------
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
-
 # ---------------- SECURITY ----------------
 SECRET_KEY = os.environ.get("SECRET_KEY", "unsafe-secret-key")
 DEBUG = os.environ.get("DEBUG", "True") == "True"
 
-# Railway host
+# Railway auto domain
 RAILWAY_HOST = os.environ.get("RAILWAY_PUBLIC_DOMAIN", "")
 
 ALLOWED_HOSTS = [
@@ -31,13 +27,13 @@ ALLOWED_HOSTS = [
 if RAILWAY_HOST:
     ALLOWED_HOSTS.append(RAILWAY_HOST)
 
+# ---------------- CSRF FIX ----------------
 CSRF_TRUSTED_ORIGINS = [
     "https://*.railway.app",
 ]
 
 if RAILWAY_HOST:
     CSRF_TRUSTED_ORIGINS.append(f"https://{RAILWAY_HOST}")
-
 
 # ---------------- APPS ----------------
 INSTALLED_APPS = [
@@ -58,12 +54,12 @@ INSTALLED_APPS = [
 
 # ---------------- CLOUDINARY ----------------
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': os.environ.get('CLOUD_NAME'),
-    'API_KEY': os.environ.get('CLOUDINARY_API_KEY'),
-    'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
+    "CLOUD_NAME": os.environ.get("CLOUD_NAME"),
+    "API_KEY": os.environ.get("CLOUDINARY_API_KEY"),
+    "API_SECRET": os.environ.get("CLOUDINARY_API_SECRET"),
 }
 
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 
 # ---------------- MIDDLEWARE ----------------
 MIDDLEWARE = [
@@ -109,8 +105,8 @@ DATABASES = {
 }
 
 # ---------------- EMAIL ----------------
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
@@ -119,14 +115,18 @@ EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
 
 # ---------------- STATIC ----------------
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / 'static']
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_DIRS = [BASE_DIR / "static"]
+STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
+# ---------------- MEDIA ----------------
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
+
 # ---------------- AUTH ----------------
-LOGIN_URL = '/auth/login/'
-LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/auth/login/'
+LOGIN_URL = "/auth/login/"
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/auth/login/"
 
 # ---------------- MESSAGES ----------------
 MESSAGE_TAGS = {
@@ -134,5 +134,5 @@ MESSAGE_TAGS = {
     messages.SUCCESS: 'success',
 }
 
-# ---------------- OTHERS ----------------
+# ---------------- OTHER ----------------
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
