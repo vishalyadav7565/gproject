@@ -12,7 +12,7 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# ---------------- SECURITY ----------------
+# ================= SECURITY =================
 SECRET_KEY = os.environ.get("SECRET_KEY", "unsafe-secret-key")
 DEBUG = os.environ.get("DEBUG", "False") == "True"
 
@@ -27,21 +27,24 @@ ALLOWED_HOSTS = [
 if RAILWAY_HOST:
     ALLOWED_HOSTS.append(RAILWAY_HOST)
 
-# ---------------- CSRF & PROXY FIX ----------------
+# ================= CSRF FIX FOR RAILWAY =================
 CSRF_TRUSTED_ORIGINS = [
-    "https://*.railway.app"
+    "https://*.railway.app",
 ]
 
 if RAILWAY_HOST:
     CSRF_TRUSTED_ORIGINS.append(f"https://{RAILWAY_HOST}")
 
-CSRF_COOKIE_SECURE = not DEBUG
-SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_HTTPONLY = False
+CSRF_USE_SESSIONS = False
+CSRF_COOKIE_SAMESITE = "Lax"
 
 USE_X_FORWARDED_HOST = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_SSL_REDIRECT = True
 
-SECURE_SSL_REDIRECT = not DEBUG
 
 # ---------------- APPS ----------------
 INSTALLED_APPS = [
