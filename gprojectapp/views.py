@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from django.template.loader import render_to_string
 from django.db.models import Q
+from django.db import transaction
 from .models import Category, SubCategory, Product
 
 # Import models
@@ -296,33 +297,60 @@ def track_order_api(request, order_id):
 # -------------------- PROFILE --------------------
 @login_required
 def profile_view(request):
+    # Safer get or create
     profile, created = UserProfile.objects.get_or_create(user=request.user)
     return render(request, "profile.html", {"profile": profile})
 
 
 @login_required
+def upload_profile_image(request):
+    if request.method == 'POST':
+        image = request.FILES.get('profile_image')
+        if image:
+            request.user.profile.image = image
+            request.user.profile.save()
+    return redirect('profile')
+
+
+
+@login_required
+@transaction.atomic
 def edit_profile(request):
-    profile, created = UserProfile.objects.get_or_create(user=request.user)
+    profile, _ = UserProfile.objects.get_or_create(user=request.user)
+
     if request.method == "POST":
-        form = UserProfileForm(request.POST, instance=profile)
-        if form.is_valid():
-            form.save()
-            request.user.email = request.POST.get("email")
-            request.user.first_name = request.POST.get("first_name", "")
-            request.user.last_name = request.POST.get("last_name", "")
-            request.user.save()
-            return redirect("profile")
-    else:
-        form = UserProfileForm(instance=profile)
-    return render(request, "edit_profile.html", {"form": form})
+        first_name = request.POST.get("first_name", "").strip()
+        last_name = request.POST.get("last_name", "").strip()
+        phone = request.POST.get("phone", "").strip()
+
+        # Basic validation
+        if not first_name or not last_name:
+            messages.error(request, "First name and last name are required.")
+            return redirect("edit_profile")
+
+        if phone and len(phone) < 10:
+            messages.error(request, "Phone number must be at least 10 digits.")
+            return redirect("edit_profile")
+
+        # Save user and profile
+        request.user.first_name = first_name
+        request.user.last_name = last_name
+        request.user.save()
+
+        profile.phone = phone
+        profile.save()
+
+        messages.success(request, "Profile updated successfully!")
+        return redirect("profile")
+
+    return render(request, "edit_profile.html", {"profile": profile})
 
 
 @login_required
 def logout_view(request):
     logout(request)
     messages.success(request, "You have been logged out successfully.")
-    return redirect('index')
-
+    return redirect("index")
 
 # -------------------- OTHER PAGES --------------------
 def product_list(request):

@@ -57,10 +57,6 @@
     .settings-item:last-child {
         border-bottom: none;
     }
-    .settings-item i {
-        font-size: 1.3rem;
-        margin-right: 10px;
-    }
 </style>
 
 <div class="container mt-5">
@@ -71,12 +67,13 @@
             <div class="profile-card text-center">
 
                 <!-- Profile Picture -->
-                {% if user.profile_image %}
-                    <img src="{{ user.profile_image.url }}" class="profile-pic" alt="Profile">
+                {% if profile.profile_image %}
+                    <img src="{{ profile.profile_image.url }}" class="profile-pic" alt="Profile">
                 {% else %}
                     <img src="{% static 'default/user.png' %}" class="profile-pic" alt="Default">
                 {% endif %}
 
+                <!-- Upload Image -->
                 <form 
                     action="{% url 'upload_profile_image' %}" 
                     method="POST" 
@@ -89,6 +86,7 @@
                     </button>
                 </form>
 
+                <!-- Name -->
                 <div class="profile-header">
                     <p class="profile-info">
                         <strong>{{ user.first_name }} {{ user.last_name }}</strong>
@@ -98,10 +96,10 @@
                 <div class="profile-body">
                     <p class="profile-info"><strong>Username:</strong> {{ user.username }}</p>
                     <p class="profile-info"><strong>Email:</strong> {{ user.email }}</p>
-                    <p class="profile-info"><strong>Phone:</strong> {{ user.phone }}</p>
+                    <p class="profile-info"><strong>Phone:</strong> {{ profile.phone|default:"Not set" }}</p>
                 </div>
 
-                <div class="profile-footer">
+                <div class="profile-footer mt-3">
                     <a href="{% url 'edit_profile' %}" class="btn btn-light btn-custom me-2">
                         <i class="bi bi-pencil-square"></i> Edit Profile
                     </a>
@@ -118,20 +116,9 @@
                     <span><i class="bi bi-receipt-cutoff"></i> My Orders</span>
                     <a href="{% url 'orders' %}" class="btn btn-sm btn-primary">Open</a>
                 </div>
-
-                <div class="settings-item">
-                    <span><i class="bi bi-arrow-repeat"></i> Refunds</span>
-                    <a href="{% url 'refunds' %}" class="btn btn-sm btn-primary">Open</a>
-                </div>
-
                 <div class="settings-item">
                     <span><i class="bi bi-gear"></i> Account Settings</span>
                     <a href="{% url 'edit_profile' %}" class="btn btn-sm btn-primary">Open</a>
-                </div>
-
-                <div class="settings-item">
-                    <span><i class="bi bi-key"></i> Change Password</span>
-                    <a href="{% url 'change_password' %}" class="btn btn-sm btn-primary">Open</a>
                 </div>
 
             </div>

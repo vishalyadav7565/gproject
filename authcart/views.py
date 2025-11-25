@@ -52,30 +52,28 @@ def login_view(request):
 # ---------------- SIGNUP ----------------
 def signup_view(request):
     if request.method == "POST":
-        username = request.POST.get("username")
-        first_name = request.POST.get("first_name")
-        last_name = request.POST.get("last_name")
-        email = request.POST.get("email")
-        password = request.POST.get("password")
-        confirm_password = request.POST.get("confirm_password")
+        username = request.POST.get("username", "").strip()
+        first_name = request.POST.get("first_name", "").strip()
+        last_name = request.POST.get("last_name", "").strip()
+        email = request.POST.get("email", "").strip()
+        password = request.POST.get("password", "")
+        confirm_password = request.POST.get("confirm_password", "")
 
+        # Basic validation
         if not email or "@" not in email:
             messages.error(request, "Please enter a valid email address.")
             return render(request, "authentication/signup.html")
-
         if password != confirm_password:
             messages.error(request, "Passwords do not match.")
             return render(request, "authentication/signup.html")
-
         if User.objects.filter(username=username).exists():
             messages.error(request, "Username already exists.")
             return render(request, "authentication/signup.html")
-
         if User.objects.filter(email=email).exists():
             messages.error(request, "Email already registered.")
             return render(request, "authentication/signup.html")
 
-        # ---- CREATE USER ----
+        # 1) Create user as inactive
         user = User.objects.create_user(
             username=username,
             email=email,
@@ -86,36 +84,51 @@ def signup_view(request):
         user.is_active = False
         user.save()
 
-        # ---- CREATE PROFILE ----
+        # 2) Create profile (if you have Profile model)
         from .models import Profile
-        Profile.objects.create(
+        profile = Profile.objects.create(
             user=user,
-            phone="",  
-            full_name=f"{first_name} {last_name}"
+            phone="",
+            full_name=f"{first_name} {last_name}".strip()
         )
 
-        # ---- SEND EMAIL ----
+        # 3) Build activation link
         uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
         token = default_token_generator.make_token(user)
-
         activation_link = request.build_absolute_uri(
             reverse('activate', kwargs={'uidb64': uidb64, 'token': token})
         )
 
+        # 4) Try to send email - if it fails delete user+profile to avoid silent signup
+        subject = "Activate Your Account"
+        message = f"Hi {user.username},\n\nClick the link to activate your account:\n\n{activation_link}\n\nIf you didn't request this, ignore this email."
+        from_email = settings.EMAIL_HOST_USER
+        recipient_list = [email]
+
         try:
-    send_mail(
-        "Activate Your Account",
-        f"Hi {user.username}, click to activate your account: {activation_link}",
-        settings.EMAIL_HOST_USER,
-        [email],
-        fail_silently=False,
-    )
-except Exception as e:
-    print("EMAIL ERROR:", e)
-    messages.error(request, "Email not sent. Please try again later.")
-    return redirect("login")
+            send_mail(
+                subject,
+                message,
+                from_email,
+                recipient_list,
+                fail_silently=False,
+            )
+        except Exception as e:
+            # Clean up -> remove user and profile so no silent signup
+            try:
+                profile.delete()
+            except Exception:
+                pass
+            user.delete()
+            # Log the error (use logging in production)
+            print("EMAIL SEND ERROR (signup):", str(e))
+            messages.error(request, "Could not send activation email. Please try again later.")
+            return render(request, "authentication/signup.html")
 
+        messages.success(request, "Account created! Check your email to activate your account.")
+        return redirect("login")
 
+    return render(request, "authentication/signup.html")
 
 # ---------------- LOGOUT ----------------
 def logout_view(request):
