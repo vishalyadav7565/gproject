@@ -20,17 +20,24 @@ MEDIA_ROOT = BASE_DIR / 'media'
 SECRET_KEY = os.environ.get("SECRET_KEY", "unsafe-secret-key")
 DEBUG = os.environ.get("DEBUG", "True") == "True"
 
-HOST = os.environ.get("ALLOWED_HOST", "")
+# Railway host
+RAILWAY_HOST = os.environ.get("RAILWAY_PUBLIC_DOMAIN", "")
 
 ALLOWED_HOSTS = [
-    HOST,
     "localhost",
-    "127.0.0.1"
+    "127.0.0.1",
 ]
 
+if RAILWAY_HOST:
+    ALLOWED_HOSTS.append(RAILWAY_HOST)
+
 CSRF_TRUSTED_ORIGINS = [
-    f"https://{HOST}"
-] if HOST else []
+    "https://*.railway.app",
+]
+
+if RAILWAY_HOST:
+    CSRF_TRUSTED_ORIGINS.append(f"https://{RAILWAY_HOST}")
+
 
 # ---------------- APPS ----------------
 INSTALLED_APPS = [
