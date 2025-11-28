@@ -151,9 +151,11 @@ class ActivateAccount(View):
             user.save()
             messages.success(request, "Your account has been activated successfully. You can now login.")
             return redirect("login")
-        else:
-            messages.error(request, "Activation link is invalid or expired.")
-            return redirect("signup")
+
+        # ❗ You forgot this part earlier
+        messages.error(request, "Activation link is invalid or expired.")
+        return redirect("login")
+
 
 # ---------------- PASSWORD RESET EMAIL ----------------
 def forgot_password(request):
