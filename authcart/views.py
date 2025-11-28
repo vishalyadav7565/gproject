@@ -10,6 +10,9 @@ from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.conf import settings
 from django.urls import reverse
+from .token_generator import email_token_generator
+from .models import Profile
+
 
 # ---------------- LOGIN ----------------
 from django.contrib.auth import authenticate, login
@@ -59,9 +62,9 @@ def signup_view(request):
         password = request.POST.get("password", "")
         confirm_password = request.POST.get("confirm_password", "")
 
-        # Basic validation
+        # Validation
         if not email or "@" not in email:
-            messages.error(request, "Please enter a valid email address.")
+            messages.error(request, "Please enter a valid email.")
             return render(request, "authentication/signup.html")
         if password != confirm_password:
             messages.error(request, "Passwords do not match.")
@@ -73,7 +76,7 @@ def signup_view(request):
             messages.error(request, "Email already registered.")
             return render(request, "authentication/signup.html")
 
-        # 1) Create user as inactive
+        # Create inactive user
         user = User.objects.create_user(
             username=username,
             email=email,
@@ -84,48 +87,43 @@ def signup_view(request):
         user.is_active = False
         user.save()
 
-        # 2) Create profile (if you have Profile model)
-        from .models import Profile
-        profile = Profile.objects.create(
+        # Create profile
+        Profile.objects.create(
             user=user,
             phone="",
             full_name=f"{first_name} {last_name}".strip()
         )
 
-        # 3) Build activation link
+        # Generate activation link
         uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
-        token = default_token_generator.make_token(user)
+        token = email_token_generator.make_token(user)
+
         activation_link = request.build_absolute_uri(
-            reverse('activate', kwargs={'uidb64': uidb64, 'token': token})
+            reverse("activate", kwargs={"uidb64": uidb64, "token": token})
         )
 
-        # 4) Try to send email - if it fails delete user+profile to avoid silent signup
+        # Send email
         subject = "Activate Your Account"
-        message = f"Hi {user.username},\n\nClick the link to activate your account:\n\n{activation_link}\n\nIf you didn't request this, ignore this email."
-        from_email = settings.EMAIL_HOST_USER
-        recipient_list = [email]
-
+        message = (
+            f"Hi {user.username},\n\n"
+            f"Click the link below to activate your account:\n{activation_link}\n\n"
+            f"If you didn't request this, ignore this email."
+        )
         try:
             send_mail(
                 subject,
                 message,
-                from_email,
-                recipient_list,
+                settings.EMAIL_HOST_USER,
+                [email],
                 fail_silently=False,
             )
         except Exception as e:
-            # Clean up -> remove user and profile so no silent signup
-            try:
-                profile.delete()
-            except Exception:
-                pass
-            user.delete()
-            # Log the error (use logging in production)
-            print("EMAIL SEND ERROR (signup):", str(e))
-            messages.error(request, "Could not send activation email. Please try again later.")
+            user.delete()  # Remove inactive user if email fails
+            messages.error(request, "Error sending email. Try again later.")
+            print("EMAIL ERROR:", e)
             return render(request, "authentication/signup.html")
 
-        messages.success(request, "Account created! Check your email to activate your account.")
+        messages.success(request, "Account created! Check your email to activate.")
         return redirect("login")
 
     return render(request, "authentication/signup.html")
@@ -143,18 +141,18 @@ class ActivateAccount(View):
         try:
             uid = force_str(urlsafe_base64_decode(uidb64))
             user = User.objects.get(pk=uid)
-        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        except Exception:
             user = None
 
-        if user is not None and default_token_generator.check_token(user, token):
+        if user is not None and email_token_generator.check_token(user, token):
             user.is_active = True
             user.save()
-            messages.success(request, "Your account has been activated successfully. You can now login.")
+            messages.success(request, "Your account has been activated. You can now login.")
             return redirect("login")
 
-        # ❗ You forgot this part earlier
         messages.error(request, "Activation link is invalid or expired.")
         return redirect("login")
+
 
 
 # ---------------- PASSWORD RESET EMAIL ----------------
