@@ -16,30 +16,22 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get("SECRET_KEY", "unsafe-secret-key")
 DEBUG = os.environ.get("DEBUG", "False") == "True"
 
+# Railway domain from environment
 RAILWAY_HOST = os.environ.get("RAILWAY_PUBLIC_DOMAIN", "")
 
-ALLOWED_HOSTS = [
-    "localhost",
-    "127.0.0.1",
-    ".railway.app",
-]
-
-if RAILWAY_HOST:
-    ALLOWED_HOSTS.append(RAILWAY_HOST)
+# Allow ALL hosts (Railway uses dynamic hostnames)
+ALLOWED_HOSTS = ["*"]
 
 # ================= CSRF FIX FOR RAILWAY =================
-CSRF_TRUSTED_ORIGINS = [
-    "https://*.railway.app",
-]
+CSRF_TRUSTED_ORIGINS = []
 
+# Add Railway HTTPS host
 if RAILWAY_HOST:
     CSRF_TRUSTED_ORIGINS.append(f"https://{RAILWAY_HOST}")
-    
+
+# These two must be enabled for Railway reverse proxy HTTPS
 CSRF_COOKIE_SAMESITE = "Lax"
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-
-
-
 
 # ---------------- APPS ----------------
 INSTALLED_APPS = [
@@ -97,7 +89,7 @@ DATABASES = {
     "default": dj_database_url.config(
         default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
         conn_max_age=600,
-        ssl_require=True if not DEBUG else False
+        ssl_require=not DEBUG  # SSL only in production
     )
 }
 
@@ -142,4 +134,4 @@ MESSAGE_TAGS = {
 
 # ---------------- OTHER ----------------
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-SESSION_COOKIE_AGE = 60 * 60 * 24 * 7  # 1 week in seconds
+SESSION_COOKIE_AGE = 60 * 60 * 24 * 7  # 1 week
