@@ -252,6 +252,11 @@ class Banner(models.Model):
     def save(self, *args, **kwargs):
         if self.image:
             try:
+                # Move PIL import inside the function
+                from PIL import Image
+                from io import BytesIO
+                from django.core.files.base import ContentFile
+
                 img = Image.open(self.image)
 
                 # Convert PNG/WEBP to RGB
@@ -272,7 +277,6 @@ class Banner(models.Model):
                 print("Banner image compression failed:", e)
 
         super().save(*args, **kwargs)
-
 
 class MegaMenu(models.Model):
     title = models.CharField(max_length=100)
