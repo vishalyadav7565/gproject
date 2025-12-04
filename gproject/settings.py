@@ -85,13 +85,25 @@ TEMPLATES = [
 ]
 
 # ---------------- DATABASE ----------------
-DATABASES = {
-    'default': dj_database_url.config(
-        default='sqlite:///db.sqlite3',  # fallback for local
-        conn_max_age=600,
-        ssl_require=True
-    )
-}
+ENVIRONMENT = os.getenv('ENV', 'development')
+
+if ENVIRONMENT == 'production':
+    # Production: PostgreSQL
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=os.getenv('DATABASE_URL'),  # e.g., from Railway
+            conn_max_age=600,
+            ssl_require=True
+        )
+    }
+else:
+    # Local: SQLite
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
+    }
 
 # ---------------- EMAIL ----------------
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
